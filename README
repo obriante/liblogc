@@ -19,20 +19,12 @@ Copyright (C) 2012  Orazio Briante orazio.briante@hotmail.it
     $ ./configure
     $ make 	
 
-and if necessary:
-    $ su
-    # make install
 
- 
 * To enable Debug option on Compiling process:
  	
     $ ./configure --enable-debug
  	
     
-* Unistalling - Makefile (if necessary)
-    $ su
-    # make uninstall
-
 * To clean directory
  
  run "make clean" from the test source tree.

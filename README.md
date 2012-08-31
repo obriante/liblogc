@@ -20,21 +20,11 @@
 	$ ./configure
 	$ make
 
-and if necessary:
-
-	$ su
-	# make install
-
  
 ## To enable Debug option on Compiling process:
  	
 	$ ./configure --enable-debug
  	
-    
-## Unistalling - Makefile (if necessary)
-
-	$ su
-	# make uninstall
 
 ## To clean directory
  
