@@ -16,8 +16,8 @@
  * You should have received a copy of the GNU General Public License along
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _DEBUG_H_
-#define _DEBUG_H_
+#ifndef _LOGC_H_
+#define _LOGC_H_
 
 #include <stdio.h>
 #include <string.h>
@@ -59,4 +59,4 @@ _error(const char *, const char *, int, const char *, ...);
 extern void
 uninitLog();
 
-#endif /* _DEBUG_H_ */
+#endif /* _LOGC_H_ */
