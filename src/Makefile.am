@@ -1,7 +1,7 @@
 noinst_LIBRARIES = liblogc.a
 
 liblogc_a_SOURCES = \
-debug.c
+logc.c
 
 liblogc_a_LIBADD =
 
