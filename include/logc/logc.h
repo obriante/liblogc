@@ -1,5 +1,5 @@
 /*
- * libtwitc - C Support Library for Twitter
+ * liblogc - C Library for video and file log
  * Copyright (C) 2012 Orazio Briante orazio.briante@hotmail.it
  *
  * This library is free software; you can redistribute it and/or
