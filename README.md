@@ -1,4 +1,4 @@
-# liblogc - C Library for file and video logging
+# liblogc - C Library for video and file log
 ###Copyright (C) 2012  Orazio Briante orazio.briante@hotmail.it
 
 ## Prerequisites:
