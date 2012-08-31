@@ -34,10 +34,6 @@
 
 static FILE *logFile = NULL;
 
-
-extern int
-createDirectory(const char *);
-
 extern void
 removeFile(const char *);
 

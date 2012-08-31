@@ -27,21 +27,6 @@ extern "C"
 {
 #endif
 
-int
-createDirectory(const char * dirName)
-{
-
-  if (dirName)
-    {
-      if (mkdir(dirName, 0777))
-        return EXIT_SUCCESS;
-
-    }
-
-  return EXIT_FAILURE;
-
-}
-
 void
 removeFile(const char * fileName)
 {
