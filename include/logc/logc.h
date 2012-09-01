@@ -23,16 +23,28 @@
 #include <string.h>
 
 #ifdef DEBUG
-#define debug(template, ...)    _debug(__FILE__, __FUNCTION__, __LINE__, template, ## __VA_ARGS__)
+#define debug(template, ...)	_debug(__FILE__, __FUNCTION__, __LINE__, template, ## __VA_ARGS__)
 #else
 #define debug(template, ...)
 #endif
 
-#define info(template, ...) _info(__FILE__,  __FUNCTION__, __LINE__, template, ## __VA_ARGS__)
-#define warning(template, ...) _warning( __FILE__,  __FUNCTION__, __LINE__, template, ## __VA_ARGS__)
-#define error(template, ...) _error( __FILE__,  __FUNCTION__, __LINE__, template, ## __VA_ARGS__)
+#define log(logType, template, ...) _log(logType, __FILE__,  __FUNCTION__, __LINE__, template, ## __VA_ARGS__)
 
-static FILE *logFile = NULL;
+
+typedef enum{
+	LOG_NONE,
+	LOG_VIDEO,
+	LOG_FILE,
+	LOG_FILE_VIDEO
+}LogMode;
+
+
+typedef enum
+{
+  ERROR,
+  WARNING,
+  INFO
+}LogType;
 
 extern void
 removeFile(const char *);
@@ -40,21 +52,20 @@ removeFile(const char *);
 extern long
 checkFileSize(const char *);
 
+extern void
+initLog(LogMode, LogMode);
 
 extern void
-initLog(const char *, const long);
+initLogFile(const char *, const long);
+
+
 
 extern void
 _debug(const char *, const char *, int, const char *, ...);
 
 extern void
-_info(const char *, const char *, int, const char *, ...);
+_log(const LogType, const char *, const char *, int, const char *, ...);
 
-extern void
-_warning(const char *, const char *, int, const char *, ...);
-
-extern void
-_error(const char *, const char *, int, const char *, ...);
 
 extern void
 uninitLog();

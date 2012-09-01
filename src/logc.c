@@ -22,6 +22,11 @@
 #include <stdarg.h>
 #include <time.h>
 
+
+static FILE *logFile = NULL;
+static LogMode logMode=LOG_NONE;
+static LogMode debugMode=LOG_NONE;
+
 #ifdef __cplusplus
 extern "C"
 {
@@ -30,159 +35,162 @@ extern "C"
 void
 removeFile(const char * fileName)
 {
-  if (remove(fileName))
-    error("Can't delete: %s", fileName);
-  else
-    info("%s successfully deleted.", fileName);
+	if (remove(fileName))
+		error("Can't delete: %s", fileName);
+	else
+		info("%s successfully deleted.", fileName);
 }
 
 long
 checkFileSize(const char * fileName)
 {
 
-  if (fileName)
-    {
+	if (fileName)
+	{
 
-      FILE *fp = fopen(fileName, "r");
+		FILE *fp = fopen(fileName, "r");
 
-      if (fp)
-        {
-          fseek(fp, 0L, SEEK_END);
-          long sz = ftell(fp);
-          rewind(fp);
+		if (fp)
+		{
+			fseek(fp, 0L, SEEK_END);
+			long sz = ftell(fp);
+			rewind(fp);
 
-          fclose(fp);
+			fclose(fp);
 
-          return sz;
-        }
+			info("File: \"%s\", Dimension: %l", fileName, sz);
 
-    }
+			return sz;
+		}
 
-  return -1;
+	}
+
+	error("File: \"%s\", Dimension Unknown",fileName);
+
+	return -1;
 }
 
 
-  void
-  checkLogFileDimension(const char * fileName, const long maxSize)
-  {
-    if (fileName)
-      {
-        debug ("fileName:\t%s", fileName);
+void
+checkLogFileDimension(const char * fileName, const long maxSize)
+{
+	if (fileName)
+	{
+		debug ("fileName:\t%s", fileName);
 
-        long size = checkFileSize(fileName);
-        debug ("size:\t%s", fileName);
+		long size = checkFileSize(fileName);
+		debug ("size:\t%s", fileName);
 
-        if (size >= maxSize)
-          removeFile(fileName);
+		if (size >= maxSize)
+			removeFile(fileName);
 
-      }
-  }
-  void
-  initLog(const char * fileName, const long maxbyteSize)
-  {
+	}
+}
 
-    if (fileName)
-      {
+void initLog(LogMode log_mode, LogMode debug_mode){
 
-        checkLogFileDimension(fileName, maxbyteSize);
+	logMode=log_mode;
+	debugMode=debug_mode;
+}
 
-        debug ("fileName:\t%s", fileName);
+void
+initLogFile(const char * fileName, const long maxbyteSize)
+{
 
-        logFile = fopen(fileName, "a");
+	if (fileName)
+	{
 
-        if (logFile)
-          debug ("Opened \"%s\" in Append Mode", fileName);
+		if(maxbyteSize)
+			checkLogFileDimension(fileName, maxbyteSize);
 
-      }
-  }
+		debug ("fileName:\t%s", fileName);
 
-  void
-  uninitLog()
-  {
-    if (logFile)
-      {
-        debug ("Closing logFile");
-        fclose(logFile);
-        logFile = NULL;
-      }
+		logFile = fopen(fileName, "a");
 
-  }
+		if (logFile)
+			debug ("Opened \"%s\" in Append Mode", fileName);
 
-  static void
-  _logWrite(FILE * output, const char *type, const char *file,
-      const char *function, int line, const char *template, va_list argp)
-  {
-    time_t now;
-    struct tm  tmNow;
-    char timeString[26];
+	}
+}
 
-    now = time(NULL );
-    localtime_r(&now, &tmNow);
-    strftime(timeString, sizeof(timeString), "%Y-%m-%d %H:%M:%S", &tmNow);
+void
+uninitLog()
+{
+	if (logFile)
+	{
+		debug ("Closing logFile");
+		fclose(logFile);
+		logFile = NULL;
+	}
 
-    fprintf(output, "%s %s (%s - %s:%i): ", timeString, type, function, file,
-        line);
-    vfprintf(output, template, argp);
-    fprintf(output, "\n");
-    fflush(output);
-  }
+	logMode=LOG_NONE;
+		debugMode=LOG_NONE;
 
-  void
-  _info(const char *file, const char *function, int line,
-      const char *template, ...)
-  {
-    va_list argp;
-    va_start(argp, template);
+}
 
-    _logWrite(stderr, "INFO   ", file, function, line, template, argp);
+static void
+_logWrite(FILE * output, const char *type, const char *file,
+		const char *function, int line, const char *template, va_list argp)
+{
+	time_t now;
+	struct tm tmNow;
+	char timeString[26];
 
-    if (logFile)
-      _logWrite(logFile, "INFO   ", file, function, line, template, argp);
+	now = time(NULL );
+	localtime_r(&now, &tmNow);
+	strftime(timeString, sizeof(timeString), "%Y-%m-%d %H:%M:%S", &tmNow);
 
-    va_end(argp);
-  }
+	fprintf(output, "%s %s (%s - %s:%i): ", timeString, type, function, file,
+			line);
+	vfprintf(output, template, argp);
+	fprintf(output, "\n");
+	fflush(output);
+}
 
-  void
-  _warning(const char *file, const char *function, int line,
-      const char *template, ...)
-  {
-    va_list argp;
-    va_start(argp, template);
+void
+_log(const LogType logType, const char *file, const char *function, int line,
+		const char *template, ...)
+{
 
-    _logWrite(stderr, "WARNING", file, function, line, template, argp);
 
-    if (logFile)
-      _logWrite(logFile, "WARNING", file, function, line, template, argp);
+	char* type=NULL;
 
-    va_end(argp);
-  }
+	va_list argp;
+	va_start(argp, template);
 
-  void
-  _error(const char *file, const char *function, int line,
-      const char *template, ...)
-  {
-    va_list argp;
-    va_start(argp, template);
+	if (logType == ERROR)
+		type="ERROR  ";
+	else if (logType == WARNING)
+		type="WARNING";
+	else
+		type="INFO   ";
 
-    _logWrite(stderr, "ERROR  ", file, function, line, template, argp);
 
-    if (logFile)
-      _logWrite(logFile, "ERROR  ", file, function, line, template, argp);
+	if(logMode!=LOG_NONE)
+		_logWrite(stderr, type, file, function, line, template, argp);
 
-    va_end(argp);
-  }
+	if (logFile && (logMode==LOG_FILE || logMode==LOG_FILE_VIDEO))
+		_logWrite(stderr, type, file, function, line, template, argp);
 
-  void
-  _debug(const char *file, const char *function, int line, const char *template,
-      ...)
-  {
-    va_list argp;
-    va_start(argp, template);
+	va_end(argp);
+}
 
-    _logWrite(stderr, "DEBUG  ", file, function, line, template, argp);
+void
+_debug(const char *file, const char *function, int line, const char *template,
+		...)
+{
+	va_list argp;
+	va_start(argp, template);
 
-    va_end(argp);
-  }
+	if(logMode!=LOG_NONE)
+		_logWrite(stderr, "DEBUG  ", file, function, line, template, argp);
+
+	if (logFile && (logMode==LOG_FILE || logMode==LOG_FILE_VIDEO))
+		_logWrite(stderr, "DEBUG  ", file, function, line, template, argp);
+
+
+	va_end(argp);
+}
 
 
 #ifdef __cplusplus
