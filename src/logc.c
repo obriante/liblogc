@@ -170,7 +170,7 @@ _log(const LogType logType, const char *file, const char *function, int line,
 		_logWrite(stderr, type, file, function, line, template, argp);
 
 	if (logFile && (logMode==LOG_FILE || logMode==LOG_FILE_VIDEO))
-		_logWrite(stderr, type, file, function, line, template, argp);
+		_logWrite(logFile, type, file, function, line, template, argp);
 
 	va_end(argp);
 }
@@ -186,7 +186,7 @@ _debug(const char *file, const char *function, int line, const char *template,
 		_logWrite(stderr, "DEBUG  ", file, function, line, template, argp);
 
 	if (logFile && (logMode==LOG_FILE || logMode==LOG_FILE_VIDEO))
-		_logWrite(stderr, "DEBUG  ", file, function, line, template, argp);
+		_logWrite(logFile, "DEBUG  ", file, function, line, template, argp);
 
 
 	va_end(argp);
