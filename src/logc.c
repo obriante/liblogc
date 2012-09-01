@@ -36,9 +36,9 @@ void
 removeFile(const char * fileName)
 {
 	if (remove(fileName))
-		error("Can't delete: %s", fileName);
+		log(INFO,"Can't delete: %s", fileName);
 	else
-		info("%s successfully deleted.", fileName);
+		log(ERROR,"%s successfully deleted.", fileName);
 }
 
 long
@@ -58,14 +58,14 @@ checkFileSize(const char * fileName)
 
 			fclose(fp);
 
-			info("File: \"%s\", Dimension: %l", fileName, sz);
+			log(INFO,"File: \"%s\", Dimension: %l", fileName, sz);
 
 			return sz;
 		}
 
 	}
 
-	error("File: \"%s\", Dimension Unknown",fileName);
+	log(ERROR,"File: \"%s\", Dimension Unknown",fileName);
 
 	return -1;
 }
