@@ -20,7 +20,7 @@ Copyright (C) 2012  Orazio Briante orazio.briante@hotmail.it
     $ make 	
 
 
-* To enable Debug option on Compiling process:
+* To enable Debug Option on Compiling process:
  	
     $ ./configure --enable-debug
  	
@@ -28,3 +28,7 @@ Copyright (C) 2012  Orazio Briante orazio.briante@hotmail.it
 * To clean directory
  
  run "make clean" from the test source tree.
+ 
+* Test Files:
+
+logTest: Simple example that show how to use the library 

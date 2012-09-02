@@ -22,20 +22,22 @@
 #include <stdio.h>
 #include <string.h>
 
-#ifdef DEBUG
-#define debug(template, ...)	_debug(__FILE__, __FUNCTION__, __LINE__, template, ## __VA_ARGS__)
-#else
-#define debug(template, ...)
-#endif
+#define DEFAULT_FILE_LOG	NULL
+#define DEFAULT_VIDEO_LOG	stderr
 
+#define DEFAULT_LOG_MODE	DISABLED_LOG
+#define DEFAULT_DEBUG_MODE	DISABLED_LOG
+
+
+#define debug(template, ...)	_debug(__FILE__, __FUNCTION__, __LINE__, template, ## __VA_ARGS__)
 #define log(logType, template, ...) _log(logType, __FILE__,  __FUNCTION__, __LINE__, template, ## __VA_ARGS__)
 
 
 typedef enum{
-	LOG_NONE,
-	LOG_VIDEO,
-	LOG_FILE,
-	LOG_FILE_VIDEO
+	DISABLED_LOG,
+	VIDEO_LOG,
+	FILE_LOG,
+	FILE_VIDEO_LOG
 }LogMode;
 
 
@@ -56,9 +58,10 @@ extern void
 initLog(LogMode, LogMode);
 
 extern void
-initLogFile(const char *, const long);
+openLogFile(const char *, const long);
 
 
+extern void openVideoLog(FILE *);
 
 extern void
 _debug(const char *, const char *, int, const char *, ...);

@@ -8,7 +8,6 @@ liblogc_a_LIBADD =
 if DEBUG
 
 AM_CFLAGS = -g3 -O0 \
-	-DDEBUG \
 	@liblogc_CFLAGS@
 
 else

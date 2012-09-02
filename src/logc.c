@@ -22,10 +22,10 @@
 #include <stdarg.h>
 #include <time.h>
 
-
-static FILE *logFile = NULL;
-static LogMode logMode=LOG_NONE;
-static LogMode debugMode=LOG_NONE;
+static FILE *file_stream=NULL;
+static FILE *video_stream=NULL;
+static LogMode logMode = DEFAULT_LOG_MODE;
+static LogMode debugMode = DEFAULT_DEBUG_MODE;
 
 #ifdef __cplusplus
 extern "C"
@@ -58,7 +58,7 @@ checkFileSize(const char * fileName)
 
 			fclose(fp);
 
-			log(INFO,"File: \"%s\", Dimension: %l", fileName, sz);
+			log(INFO,"File: \"%s\", Dimension: %d", fileName, sz);
 
 			return sz;
 		}
@@ -76,10 +76,9 @@ checkLogFileDimension(const char * fileName, const long maxSize)
 {
 	if (fileName)
 	{
-		debug ("fileName:\t%s", fileName);
-
 		long size = checkFileSize(fileName);
-		debug ("size:\t%s", fileName);
+
+		debug ("fileName: %s, size:\t%d", fileName, size);
 
 		if (size >= maxSize)
 			removeFile(fileName);
@@ -87,44 +86,52 @@ checkLogFileDimension(const char * fileName, const long maxSize)
 	}
 }
 
-void initLog(LogMode log_mode, LogMode debug_mode){
+void initLog(LogMode log_mode, LogMode debug_mode)
+{
+	video_stream = DEFAULT_VIDEO_LOG;
+	file_stream = DEFAULT_FILE_LOG;
 
 	logMode=log_mode;
 	debugMode=debug_mode;
 }
 
 void
-initLogFile(const char * fileName, const long maxbyteSize)
+openLogFile(const char * fileName, const long maxbyteSize)
 {
 
 	if (fileName)
 	{
 
-		if(maxbyteSize)
+		if(maxbyteSize>=0)
 			checkLogFileDimension(fileName, maxbyteSize);
 
 		debug ("fileName:\t%s", fileName);
 
-		logFile = fopen(fileName, "a");
+		file_stream = fopen(fileName, "a");
 
-		if (logFile)
+		if (file_stream)
 			debug ("Opened \"%s\" in Append Mode", fileName);
 
 	}
 }
 
+void openVideoLog(FILE *video)
+{
+video_stream=video;
+}
+
 void
 uninitLog()
 {
-	if (logFile)
+	if (file_stream)
 	{
 		debug ("Closing logFile");
-		fclose(logFile);
-		logFile = NULL;
+		fclose(file_stream);
+		file_stream = NULL;
 	}
 
-	logMode=LOG_NONE;
-		debugMode=LOG_NONE;
+	logMode=DISABLED_LOG;
+	debugMode=DISABLED_LOG;
 
 }
 
@@ -166,11 +173,11 @@ _log(const LogType logType, const char *file, const char *function, int line,
 		type="INFO   ";
 
 
-	if(logMode!=LOG_NONE)
-		_logWrite(stderr, type, file, function, line, template, argp);
+	if(video_stream && logMode!=DISABLED_LOG)
+		_logWrite(video_stream, type, file, function, line, template, argp);
 
-	if (logFile && (logMode==LOG_FILE || logMode==LOG_FILE_VIDEO))
-		_logWrite(logFile, type, file, function, line, template, argp);
+	if (file_stream && (logMode==FILE_LOG || logMode==FILE_VIDEO_LOG))
+		_logWrite(file_stream, type, file, function, line, template, argp);
 
 	va_end(argp);
 }
@@ -182,11 +189,11 @@ _debug(const char *file, const char *function, int line, const char *template,
 	va_list argp;
 	va_start(argp, template);
 
-	if(logMode!=LOG_NONE)
-		_logWrite(stderr, "DEBUG  ", file, function, line, template, argp);
+	if(video_stream && debugMode!=DISABLED_LOG)
+		_logWrite(video_stream, "DEBUG  ", file, function, line, template, argp);
 
-	if (logFile && (logMode==LOG_FILE || logMode==LOG_FILE_VIDEO))
-		_logWrite(logFile, "DEBUG  ", file, function, line, template, argp);
+	if (file_stream && (debugMode==FILE_LOG || debugMode==FILE_VIDEO_LOG))
+		_logWrite(file_stream, "DEBUG  ", file, function, line, template, argp);
 
 
 	va_end(argp);

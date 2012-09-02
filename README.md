@@ -29,3 +29,7 @@
 ## To clean directory
  
  run "make clean" from the test source tree.
+
+## Test Files:
+
+* logTest: Simple example that show how to use the library 

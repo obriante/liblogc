@@ -35,7 +35,9 @@ DX_INIT_DOXYGEN([$PACKAGE_NAME],[liblogc.doxyfile],[doc])
 
 AC_CONFIG_SUBDIRS( liblogc )
 	liblogc_CFLAGS="-I\$(top_srcdir)/include"
+	liblogc_LIBS="\$(top_builddir)/src/liblogc.a"
 AC_SUBST(liblogc_CFLAGS)
+AC_SUBST(liblogc_LIBS)
 
 dnl DEBUG
 AC_ARG_ENABLE(debug,
@@ -53,5 +55,6 @@ AC_PROG_RANLIB
 AC_CONFIG_FILES(
 Makefile
 src/Makefile
+example/Makefile
 )
 AC_OUTPUT
