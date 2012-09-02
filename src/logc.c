@@ -16,6 +16,14 @@
  * You should have received a copy of the GNU General Public License along
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+
+/**
+ * \file logc.c
+ * \brief The logc functions
+ *
+**/
+
+
 #include <logc/logc.h>
 
 #include <stdlib.h>
@@ -32,17 +40,36 @@ extern "C"
 {
 #endif
 
-void
-removeFile(const char * fileName)
+
+/**
+ * Delete a File
+ * @param fileName The name of the file to delete
+ *
+ * @return 0 for operation success, 1 for operation failure
+ * */
+int
+removeFile(const char *fileName)
 {
-	if (remove(fileName))
+	if (remove(fileName)){
 		log(INFO,"Can't delete: %s", fileName);
+		return EXIT_SUCCESS;
+	}
 	else
 		log(ERROR,"%s successfully deleted.", fileName);
+
+
+return EXIT_FAILURE;
+
 }
 
+/**
+ * Check File Dimension
+ *
+ * @param fileName The name of the file to check
+ * @return The dimension of the file (long value)
+ */
 long
-checkFileSize(const char * fileName)
+getFileSize(const char * fileName)
 {
 
 	if (fileName)
@@ -70,22 +97,37 @@ checkFileSize(const char * fileName)
 	return -1;
 }
 
-
-void
-checkLogFileDimension(const char * fileName, const long maxSize)
+/**
+ * Erase the File (indicated  through fileName) if the file dimension are more or equal of the declared max size .
+ *
+ * @param fileName The name of the file that must be checked
+ * @param maxSize The max size of file
+ *
+ * @return 0 for operation success, 1 for operation failure
+ */
+int
+checkFileSize(const char * fileName, const long maxSize)
 {
 	if (fileName)
 	{
-		long size = checkFileSize(fileName);
+		long size = getFileSize(fileName);
 
 		debug ("fileName: %s, size:\t%d", fileName, size);
 
 		if (size >= maxSize)
-			removeFile(fileName);
+			return removeFile(fileName);
 
 	}
+
+	return EXIT_FAILURE;
 }
 
+/**
+ * Initialize the Logging process. The video stream and the file stream are set to the default value.
+ *
+ * @param log_mode the LogMode to use for log message
+ * @param debug_mode the LogMode to use for debug message
+ */
 void initLog(LogMode log_mode, LogMode debug_mode)
 {
 	video_stream = DEFAULT_VIDEO_LOG;
@@ -95,47 +137,64 @@ void initLog(LogMode log_mode, LogMode debug_mode)
 	debugMode=debug_mode;
 }
 
-void
-openLogFile(const char * fileName, const long maxbyteSize)
+/**
+ * Open a Log File called by name.
+ *
+ * @param fileName The name of the Log file to open.
+ *
+ * @return 0 for operation success, 1 for operation failure
+ */
+int
+openLogFile(const char * fileName)
 {
 
 	if (fileName)
 	{
-
-		if(maxbyteSize>=0)
-			checkLogFileDimension(fileName, maxbyteSize);
-
 		debug ("fileName:\t%s", fileName);
 
 		file_stream = fopen(fileName, "a");
 
-		if (file_stream)
+		if (file_stream){
 			debug ("Opened \"%s\" in Append Mode", fileName);
+		return EXIT_SUCCESS;
+		}
 
 	}
+
+	return EXIT_FAILURE;
 }
 
+/**
+ * Change the Video stream
+ *
+ * @param video the new stream
+ */
 void openVideoLog(FILE *video)
 {
 video_stream=video;
 }
 
+/**
+ * Uninitialize the Logging Process
+ */
 void
 uninitLog()
 {
 	if (file_stream)
 	{
-		debug ("Closing logFile");
+		debug ("Closing Log File");
 		fclose(file_stream);
-		file_stream = NULL;
 	}
+
+	video_stream = DEFAULT_VIDEO_LOG;
+	file_stream = DEFAULT_FILE_LOG;
 
 	logMode=DISABLED_LOG;
 	debugMode=DISABLED_LOG;
 
 }
 
-static void
+void
 _logWrite(FILE * output, const char *type, const char *file,
 		const char *function, int line, const char *template, va_list argp)
 {

@@ -40,19 +40,21 @@ int main(int argc, char *argv[])
 	print_messages("log mode: VIDEO_LOG, video mode: VIDEO_LOG");
 	uninitLog();
 
+	char *fileName="/tmp/testLog.log";
 
 	initLog(FILE_LOG, FILE_LOG);
-	openLogFile("/tmp/testLog.log", 0);
+	checkFileSize(fileName, 0);
+	openLogFile(fileName);
 	print_messages("log mode: FILE_LOG, video mode: FILE_LOG");
 	uninitLog();
 
 	initLog(FILE_VIDEO_LOG, FILE_VIDEO_LOG);
-	openLogFile("/tmp/testLog.log", -1);
+	openLogFile(fileName);
 	print_messages("log mode: FILE_VIDEO_LOG, video mode: FILE_VIDEO_LOG");
 	uninitLog();
 
 	initLog(FILE_VIDEO_LOG, FILE_VIDEO_LOG);
-	openLogFile("/tmp/testLog.log", -1);
+	openLogFile(fileName);
 	openVideoLog(stdout);
 	print_messages("log mode: FILE_VIDEO_LOG, video mode: FILE_VIDEO_LOG");
 	uninitLog();

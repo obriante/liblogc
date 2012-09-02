@@ -16,31 +16,72 @@
  * You should have received a copy of the GNU General Public License along
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+
+
+/** \mainpage liblogc Documentation
+ *
+ * \section liblogc_functions Library Functions
+ *
+ * see logc.h and logc.c documentation.
+ *
+ * <H2>README</H2>
+ *
+ * @verbinclude README
+ *
+ */
+
+/**
+ * @page liblogc_readme README
+ * @verbinclude README
+ */
+
+/**
+ * @page liblogc_install INSTALL
+ * @verbinclude INSTALL
+ */
+
+/**
+ * @page liblogc_license COPYING
+ * @verbinclude COPYING
+ */
+
+/**
+ * @page liblogc_changelog ChangeLog
+ * @verbinclude ChangeLog
+ */
+
+/**
+ * \file logc.h
+ * \brief The logc header
+ *
+**/
+
+
 #ifndef _LOGC_H_
 #define _LOGC_H_
 
 #include <stdio.h>
 #include <string.h>
 
-#define DEFAULT_FILE_LOG	NULL
-#define DEFAULT_VIDEO_LOG	stderr
+#define DEFAULT_FILE_LOG	NULL /**< Default Log File Value */
+#define DEFAULT_VIDEO_LOG	stderr /**< Default Video Log Value */
 
-#define DEFAULT_LOG_MODE	DISABLED_LOG
-#define DEFAULT_DEBUG_MODE	DISABLED_LOG
-
-
-#define debug(template, ...)	_debug(__FILE__, __FUNCTION__, __LINE__, template, ## __VA_ARGS__)
-#define log(logType, template, ...) _log(logType, __FILE__,  __FUNCTION__, __LINE__, template, ## __VA_ARGS__)
+#define DEFAULT_LOG_MODE	DISABLED_LOG /**< Default Log Mode*/
+#define DEFAULT_DEBUG_MODE	DISABLED_LOG /**< Default Debug Mode */
 
 
+#define debug(template, ...)	_debug(__FILE__, __FUNCTION__, __LINE__, template, ## __VA_ARGS__) /**< To print a debug output*/
+#define log(logType, template, ...) _log(logType, __FILE__,  __FUNCTION__, __LINE__, template, ## __VA_ARGS__)/**< To print a log output*/
+
+/** Define How to log information*/
 typedef enum{
-	DISABLED_LOG,
-	VIDEO_LOG,
-	FILE_LOG,
-	FILE_VIDEO_LOG
+	DISABLED_LOG, /**< Log Disabled*/
+	VIDEO_LOG, /**< Only Video Log */
+	FILE_LOG, /**< Only File Log*/
+	FILE_VIDEO_LOG /**< File and Video Log*/
 }LogMode;
 
-
+/** Is used into the log function to show the message relevance*/
 typedef enum
 {
   ERROR,
@@ -48,18 +89,20 @@ typedef enum
   INFO
 }LogType;
 
-extern void
+extern int
 removeFile(const char *);
 
 extern long
-checkFileSize(const char *);
+getFileSize(const char *);
+
+extern int
+checkFileSize(const char *, const long);
 
 extern void
 initLog(LogMode, LogMode);
 
-extern void
-openLogFile(const char *, const long);
-
+extern int
+openLogFile(const char *);
 
 extern void openVideoLog(FILE *);
 
