@@ -233,7 +233,7 @@ extern "C"
 
     if(logMode!= DISABLED_LOG)
       {
-        if(video_stream && debugMode!=FILE_LOG)
+        if(video_stream && logMode!=FILE_LOG)
           _logWrite(video_stream, type, file, function, line, template, argp);
 
         if (file_stream && logMode!=VIDEO_LOG)
