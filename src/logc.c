@@ -250,7 +250,7 @@ extern "C"
     va_list argp;
     va_start(argp, template);
 
-    if(logMode!= DISABLED_LOG)
+    if(debugMode!= DISABLED_LOG)
       {
         if(video_stream &&  debugMode!= FILE_LOG)
           _logWrite(video_stream, "DEBUG  ", file, function, line, template, argp);
