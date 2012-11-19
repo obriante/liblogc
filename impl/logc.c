@@ -24,7 +24,7 @@
  **/
 
 
-#include <logc/logc.h>
+#include "../logc.h"
 
 #include <stdlib.h>
 #include <stdarg.h>

@@ -1,33 +1,20 @@
-liblogc - C Library for video and file log
-Copyright (C) 2012  Orazio Briante orazio.briante@hotmail.it
+liblogc - C Library for video and file log - CMake friendly
+Original Author and Copyright (C): 2012  Orazio Briante orazio.briante@hotmail.it
+CMake building system: Michele Adduci info@micheleadduci.net
 
 * Prerequisites:
 
 	- gcc, g++, or cc
-	- pkg-config
-	- autotools
+	- cmake
 
 * How to Generate Makefile:
 
-    $ ./autogen.sh
-  or
-    $ sh autogen.sh
-
-
+    $ cmake .
+  
 * Compile - Makefile:
     
-    $ ./configure
     $ make 	
 
-
-* To enable Debug Option on Compiling process:
- 	
-    $ ./configure --enable-debug
- 	
-    
-* To clean directory
- 
- run "make clean" from the test source tree.
  
 * Test Files:
 
