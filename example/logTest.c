@@ -23,10 +23,10 @@
 
 void print_messages(const char *message)
 {
-
 	log(INFO,message);
 	log(WARNING,message);
 	log(ERROR,message);
+	log(DEBUG,message);
 	debug(message);
 
 }
@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
 	print_messages("log mode: VIDEO_LOG, video mode: VIDEO_LOG");
 	uninitLog();
 
-	char *fileName="/tmp/testLog.log";
+	char *fileName="/tmp/liblogc.test.log";
 
 	initLog(FILE_LOG, FILE_LOG);
 	checkFileSize(fileName, 0);

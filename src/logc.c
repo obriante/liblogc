@@ -223,27 +223,7 @@ _logWrite(FILE * output, const char *type, const char *file,
 	strftime(timeString, sizeof(timeString), "%Y-%m-%d %H:%M:%S", &tmNow);
 
 	fprintf(output, "%s - %s - (%s - %s:%i): ", type, timeString, function, file,
-				line);
-	vfprintf(output, template, argp);
-	fprintf(output, "\n");
-	fflush(output);
-}
-
-void
-_logWriteColor(FILE * output, const char *type, const char* color, const char *file,
-		const char *function, int line, const char *template, va_list argp)
-{
-	time_t now;
-	struct tm tmNow;
-	char timeString[26];
-
-	now = time(NULL );
-	localtime_r(&now, &tmNow);
-	strftime(timeString, sizeof(timeString), "%Y-%m-%d %H:%M:%S", &tmNow);
-
-	fprintf(output, "%s %s"RESET" - %s - (%s - %s:%i): ", color, type, timeString, function, file,
 			line);
-
 	vfprintf(output, template, argp);
 	fprintf(output, "\n");
 	fflush(output);
@@ -286,16 +266,25 @@ _log(const LogType logType, const char *file, const char *function, int line,
 
 	if(logMode!= DISABLED_LOG)
 	{
+
 		if(video_stream && logMode!=FILE_LOG)
+		{
 #ifdef __linux__
-		_logWriteColor(video_stream, type, color, file, function, line, _template, argp);
+
+			char* typeColor=NULL;
+			asprintf(&typeColor, "%s%s%s",color,type,RESET);
+			_logWrite(video_stream, typeColor, file, function, line, _template, argp);
 #else
-		_logWrite(video_stream, type, file, function, line, _template, argp);
+			_logWrite(video_stream, type, file, function, line, _template, argp);
 #endif
 
 
+		}
+
 		if (file_stream && logMode!=VIDEO_LOG)
+		{
 			_logWrite(file_stream, type, file, function, line, _template, argp);
+		}
 	}
 
 	va_end(argp);
