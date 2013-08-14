@@ -210,7 +210,7 @@ uninitLog()
 
 }
 
-char* _time2String(){
+const char* _time2String(){
 	time_t now;
 	struct tm tmNow;
 	char timeString[26];
