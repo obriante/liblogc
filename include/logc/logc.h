@@ -69,9 +69,8 @@
 #define DEFAULT_LOG_MODE	DISABLED_LOG /**< Default Log Mode*/
 #define DEFAULT_DEBUG_MODE	DISABLED_LOG /**< Default Debug Mode */
 
-
-#define debug(template, ...)	_debug(__FILE__, __FUNCTION__, __LINE__, template, ## __VA_ARGS__) /**< To print a debug output*/
 #define log(logType, template, ...) _log(logType, __FILE__,  __FUNCTION__, __LINE__, template, ## __VA_ARGS__)/**< To print a log output*/
+#define debug(template, ...)	_log(DEBUG, __FILE__,  __FUNCTION__, __LINE__, template, ## __VA_ARGS__)/**< To print a log output*/
 
 /** Define How to log information*/
 typedef enum{
@@ -86,7 +85,8 @@ typedef enum
 {
   ERROR,
   WARNING,
-  INFO
+  INFO,
+  DEBUG
 }LogType;
 
 extern int
@@ -105,9 +105,6 @@ extern int
 openLogFile(const char *);
 
 extern void openVideoLog(FILE *);
-
-extern void
-_debug(const char *, const char *, int, const char *, ...);
 
 extern void
 _log(const LogType, const char *, const char *, int, const char *, ...);

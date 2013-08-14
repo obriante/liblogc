@@ -222,8 +222,8 @@ _logWrite(FILE * output, const char *type, const char *file,
 	localtime_r(&now, &tmNow);
 	strftime(timeString, sizeof(timeString), "%Y-%m-%d %H:%M:%S", &tmNow);
 
-	fprintf(output, "%s %s (%s - %s:%i): ", timeString, type, function, file,
-			line);
+	fprintf(output, "%s - %s - (%s - %s:%i): ", type, timeString, function, file,
+				line);
 	vfprintf(output, template, argp);
 	fprintf(output, "\n");
 	fflush(output);
@@ -241,7 +241,7 @@ _logWriteColor(FILE * output, const char *type, const char* color, const char *f
 	localtime_r(&now, &tmNow);
 	strftime(timeString, sizeof(timeString), "%Y-%m-%d %H:%M:%S", &tmNow);
 
-	fprintf(output, "%s %s%s"RESET" (%s - %s:%i): ", timeString, color, type, function, file,
+	fprintf(output, "%s %s"RESET" - %s - (%s - %s:%i): ", color, type, timeString, function, file,
 			line);
 
 	vfprintf(output, template, argp);
@@ -254,6 +254,8 @@ _log(const LogType logType, const char *file, const char *function, int line,
 		const char *template, ...)
 {
 
+	char*  _template=NULL;
+	asprintf(&_template, "%s", template);
 
 	char* type=NULL;
 	char* color=RESET;
@@ -263,61 +265,41 @@ _log(const LogType logType, const char *file, const char *function, int line,
 
 	if (logType == ERROR)
 	{
-		type="ERROR  ";
+		type="[ERROR  ]";
 		color=RED;
 	}
 	else if (logType == WARNING)
 	{
-		type="WARNING";
+		type="[WARNING]";
 		color=YELLOW;
+	}
+	else if (logType == INFO)
+	{
+		type="[INFO   ]";
+		color=GREEN;
 	}
 	else
 	{
-		type="INFO   ";
-		color=GREEN;
+		type="[DEBUG  ]";
+		color=CYAN;
 	}
 
 	if(logMode!= DISABLED_LOG)
 	{
 		if(video_stream && logMode!=FILE_LOG)
 #ifdef __linux__
-			_logWriteColor(video_stream, type, color, file, function, line, template, argp);
+		_logWriteColor(video_stream, type, color, file, function, line, _template, argp);
 #else
-		_logWrite(video_stream, type, file, function, line, template, argp);
+		_logWrite(video_stream, type, file, function, line, _template, argp);
 #endif
 
 
 		if (file_stream && logMode!=VIDEO_LOG)
-			_logWrite(file_stream, type, file, function, line, template, argp);
+			_logWrite(file_stream, type, file, function, line, _template, argp);
 	}
 
 	va_end(argp);
 }
-
-void
-_debug(const char *file, const char *function, int line, const char *template,
-		...)
-{
-	va_list argp;
-	va_start(argp, template);
-
-	if(debugMode!= DISABLED_LOG)
-	{
-		if(video_stream &&  debugMode!= FILE_LOG)
-
-#ifdef __linux__
-			_logWriteColor(video_stream, "DEBUG  ", RESET, file, function, line, template, argp);
-#else
-		_logWrite(video_stream, "DEBUG  ", file, function, line, template, argp);
-#endif
-
-		if (file_stream &&  debugMode!= VIDEO_LOG)
-			_logWrite(file_stream, "DEBUG  ",file, function, line, template, argp);
-	}
-
-	va_end(argp);
-}
-
 
 #ifdef __cplusplus
 }
