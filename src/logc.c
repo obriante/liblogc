@@ -210,10 +210,7 @@ uninitLog()
 
 }
 
-void
-_logWrite(FILE * output, const char *type, const char *file,
-		const char *function, int line, const char *template, va_list argp)
-{
+char* _time2String(){
 	time_t now;
 	struct tm tmNow;
 	char timeString[26];
@@ -222,17 +219,19 @@ _logWrite(FILE * output, const char *type, const char *file,
 	localtime_r(&now, &tmNow);
 	strftime(timeString, sizeof(timeString), "%Y-%m-%d %H:%M:%S", &tmNow);
 
-	fprintf(output, "%s - %s - (%s - %s:%i): ", type, timeString, function, file,
-			line);
-	vfprintf(output, template, argp);
-	fprintf(output, "\n");
-	fflush(output);
+	return timeString;
 }
+
 
 void
 _log(const LogType logType, const char *file, const char *function, int line,
 		const char *template, ...)
 {
+
+	char *file_string=NULL;
+	char *video_string=NULL;
+
+	char *timeString=_time2String();
 
 	char*  _template=NULL;
 	asprintf(&_template, "%s", template);
@@ -264,26 +263,36 @@ _log(const LogType logType, const char *file, const char *function, int line,
 		color=CYAN;
 	}
 
+#ifdef __linux__
+
+	char* typeColor=NULL;
+	asprintf(&typeColor, "%s%s%s",color,type,RESET);
+	asprintf(&video_string, "%s - %s - (%s - %s:%i): ", typeColor, timeString, function, file, line);
+	asprintf(&file_string, "%s - %s - (%s - %s:%i): ", type, timeString, function, file, line);
+#else
+	asprintf(&video_string, "%s - %s - (%s - %s:%i): ", type, timeString, function, file, line);
+	asprintf(&file_string, "%s - %s - (%s - %s:%i): ", type, timeString, function, file, line);
+#endif
+
 	if(logMode!= DISABLED_LOG)
 	{
 
 		if(video_stream && logMode!=FILE_LOG)
 		{
-#ifdef __linux__
 
-			char* typeColor=NULL;
-			asprintf(&typeColor, "%s%s%s",color,type,RESET);
-			_logWrite(video_stream, typeColor, file, function, line, _template, argp);
-#else
-			_logWrite(video_stream, type, file, function, line, _template, argp);
-#endif
-
-
+			fprintf(video_stream, "%s",video_string);
+			vfprintf(video_stream, template, argp);
+			fprintf(video_stream, "\n");
+			fflush(video_stream);
 		}
 
 		if (file_stream && logMode!=VIDEO_LOG)
 		{
-			_logWrite(file_stream, type, file, function, line, _template, argp);
+
+			fprintf(file_stream, "%s", file_string);
+			vfprintf(file_stream, template, argp);
+			fprintf(file_stream, "\n");
+			fflush(file_stream);
 		}
 	}
 
