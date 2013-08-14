@@ -66,11 +66,11 @@ int
 removeFile(const char *fileName)
 {
 	if (remove(fileName)){
-		log(INFO,"Can't delete: %s", fileName);
+		log(ERROR,"Can't delete: %s", fileName);
 		return EXIT_SUCCESS;
 	}
 	else
-		log(ERROR,"%s successfully deleted.", fileName);
+		log(INFO,"%s successfully deleted.", fileName);
 
 
 	return EXIT_FAILURE;
