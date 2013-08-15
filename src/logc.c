@@ -246,7 +246,7 @@ char* _time2String(){
 	return timeString;
 }
 
-void _printMessage(FILE *stream, const char *template, const va_list argp, const char *string)
+void _printMessage(FILE *stream, const char *template, va_list argp, const char *string)
 {
 	fprintf(stream, "%s",string);
 	vfprintf(stream, template, argp);
