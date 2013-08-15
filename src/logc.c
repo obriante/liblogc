@@ -30,6 +30,15 @@
 #include <stdarg.h>
 #include <time.h>
 
+
+#define TRACE_TYPE_STRING		" TRACE   "
+#define DEBUG_TYPE_STRING		" DEBUG   "
+#define INFO_TYPE_STRING		" INFO    "
+#define WARNING_TYPE_STRING 	" WARNING "
+#define ERROR_TYPE_STRING		" ERROR   "
+#define FATAL_TYPE_STRING		" FATAL   "
+
+
 #ifdef __linux__
 
 #define RESET   "\033[0m"
@@ -42,13 +51,14 @@
 #define CYAN    "\033[36m"      /* Cyan */
 #define WHITE   "\033[37m"      /* White */
 
+#define TRACE_TYPE_COLOR		CYAN
+#define DEBUG_TYPE_COLOR		BLUE
+#define INFO_TYPE_COLOR			GREEN
+#define WARNING_TYPE_COLOR		YELLOW
+#define ERROR_TYPE_COLOR		RED
+#define FATAL_TYPE_COLOR		MAGENTA
+
 #endif
-
-
-static FILE *file_stream=NULL;
-static FILE *video_stream=NULL;
-static LogMode logMode = DEFAULT_LOG_MODE;
-static LogMode debugMode = DEFAULT_DEBUG_MODE;
 
 #ifdef __cplusplus
 extern "C"
@@ -70,7 +80,7 @@ removeFile(const char *fileName)
 		return EXIT_SUCCESS;
 	}
 	else
-		log(INFO,"%s successfully deleted.", fileName);
+		log(TRACE,"%s successfully deleted.", fileName);
 
 
 	return EXIT_FAILURE;
@@ -100,7 +110,7 @@ getFileSize(const char * fileName)
 
 			fclose(fp);
 
-			log(INFO,"File: \"%s\", Dimension: %d", fileName, sz);
+			log(TRACE,"File: \"%s\", Dimension: %d", fileName, sz);
 
 			return sz;
 		}
@@ -127,7 +137,7 @@ checkFileSize(const char * fileName, const long maxSize)
 	{
 		long size = getFileSize(fileName);
 
-		debug ("fileName: %s, size:\t%d", fileName, size);
+		trace ("fileName: %s, size:\t%d", fileName, size);
 
 		if (size >= maxSize)
 			return removeFile(fileName);
@@ -148,8 +158,23 @@ void initLog(LogMode log_mode, LogMode debug_mode)
 	video_stream = DEFAULT_VIDEO_LOG;
 	file_stream = DEFAULT_FILE_LOG;
 
-	logMode=log_mode;
-	debugMode=debug_mode;
+	_log_mode=log_mode;
+	_debug_mode=debug_mode;
+
+	_video_log_level=OFF_LEVEL;
+	_file_log_level=OFF_LEVEL;
+
+
+}
+
+void initLogger(LogLevel video_log_level, LogLevel file_log_level)
+{
+	video_stream = DEFAULT_VIDEO_LOG;
+	file_stream = DEFAULT_FILE_LOG;
+
+	_video_log_level=video_log_level;
+	_file_log_level=file_log_level;
+
 }
 
 /**
@@ -165,18 +190,18 @@ openLogFile(const char * fileName)
 
 	if (fileName)
 	{
-		debug ("fileName:\t%s", fileName);
+		trace("Opening\t%s", fileName);
 
 		file_stream = fopen(fileName, "a");
 
 		if (file_stream){
 
-			// debug ("Opened \"%s\" in Append Mode", fileName);
 			return EXIT_SUCCESS;
 		}
 
 	}
 
+	trace("Failure Opening\t%s", fileName);
 	return EXIT_FAILURE;
 }
 
@@ -198,29 +223,37 @@ uninitLog()
 {
 	if (file_stream)
 	{
-		debug ("Closing Log File");
+		trace ("Closing Log File");
 		fclose(file_stream);
 	}
 
 	video_stream = DEFAULT_VIDEO_LOG;
 	file_stream = DEFAULT_FILE_LOG;
 
-	logMode=DISABLED_LOG;
-	debugMode=DISABLED_LOG;
+	_log_mode=DISABLED_LOG;
+	_debug_mode=DISABLED_LOG;
 
 }
 
-const char* _time2String(){
+char* _time2String(){
 	time_t now;
 	struct tm tmNow;
-	char timeString[26];
-
+	int timeString_size=26*sizeof(char)*8;
+	char* timeString=(char*)malloc(timeString_size);
 	now = time(NULL );
 	localtime_r(&now, &tmNow);
-	strftime(timeString, sizeof(timeString), "%Y-%m-%d %H:%M:%S", &tmNow);
-
+	strftime(timeString, timeString_size, "%Y-%m-%d %H:%M:%S", &tmNow);
 	return timeString;
 }
+
+void _printMessage(FILE *stream, const char *template, const va_list argp, const char *string)
+{
+	fprintf(stream, "%s",string);
+	vfprintf(stream, template, argp);
+	fprintf(stream, "\n");
+	fflush(stream);
+}
+
 
 
 void
@@ -230,6 +263,7 @@ _log(const LogType logType, const char *file, const char *function, int line,
 
 	char *file_string=NULL;
 	char *video_string=NULL;
+	char *string_format="%s %s [%s] %s:%i - ";
 
 	char *timeString=_time2String();
 
@@ -242,42 +276,185 @@ _log(const LogType logType, const char *file, const char *function, int line,
 	va_list argp;
 	va_start(argp, template);
 
-	if (logType == ERROR)
+	switch (logType)
 	{
-		type="[ERROR  ]";
-		color=RED;
-	}
-	else if (logType == WARNING)
-	{
-		type="[WARNING]";
-		color=YELLOW;
-	}
-	else if (logType == INFO)
-	{
-		type="[INFO   ]";
-		color=GREEN;
-	}
-	else
-	{
-		type="[DEBUG  ]";
-		color=CYAN;
+	case TRACE:
+		type=TRACE_TYPE_STRING;
+		break;
+
+	case DEBUG:
+		type=DEBUG_TYPE_STRING;
+		break;
+
+	case INFO:
+		type=INFO_TYPE_STRING;
+		break;
+
+	case WARNING:
+		type=WARNING_TYPE_STRING;
+		break;
+
+	case ERROR:
+		type=ERROR_TYPE_STRING;
+		break;
+
+	case FATAL:
+		type=FATAL_TYPE_STRING;
+		break;
+
+	default:
+		type=TRACE_TYPE_STRING;
+		break;
 	}
 
 #ifdef __linux__
 
+	switch (logType)
+	{
+	case TRACE:
+		color=TRACE_TYPE_COLOR;
+		break;
+
+	case DEBUG:
+		color=DEBUG_TYPE_COLOR;
+		break;
+
+	case INFO:
+		color=INFO_TYPE_COLOR;
+		break;
+
+	case WARNING:
+		color=WARNING_TYPE_COLOR;
+		break;
+
+	case ERROR:
+		color=ERROR_TYPE_COLOR;
+		break;
+
+	case FATAL:
+		color=FATAL_TYPE_COLOR;
+		break;
+
+	default:
+		color=TRACE_TYPE_COLOR;
+		break;
+	}
+
 	char* typeColor=NULL;
 	asprintf(&typeColor, "%s%s%s",color,type,RESET);
-	asprintf(&video_string, "%s - %s - (%s - %s:%i): ", typeColor, timeString, function, file, line);
-	asprintf(&file_string, "%s - %s - (%s - %s:%i): ", type, timeString, function, file, line);
+	asprintf(&video_string, string_format, timeString, typeColor, function, file, line);
+	asprintf(&file_string,  string_format, timeString, type, function, file, line);
 #else
-	asprintf(&video_string, "%s - %s - (%s - %s:%i): ", type, timeString, function, file, line);
-	asprintf(&file_string, "%s - %s - (%s - %s:%i): ", type, timeString, function, file, line);
+	asprintf(&video_string, string_format, timeString, type, function, file, line);
+	asprintf(&file_string,  string_format, timeString, type, function, file, line);
 #endif
 
-	if(logMode!= DISABLED_LOG)
+	if (video_stream!=NULL)
+		switch (_video_log_level)
+		{
+		case OFF_LEVEL:
+			break;
+
+		case ALL_LEVEL:
+			_printMessage(video_stream,template, argp, video_string);
+			break;
+
+		case DEBUG_LEVEL:
+			if(logType!=TRACE )
+			{
+				_printMessage(video_stream,template, argp, video_string);
+			}
+			break;
+
+		case INFO_LEVEL:
+			if(logType!=TRACE && logType!=DEBUG)
+			{
+				_printMessage(video_stream,template, argp, video_string);
+			}
+			break;
+
+		case WARNING_LEVEL:
+			if(logType!=TRACE && logType!=DEBUG && logType!=INFO)
+			{
+				_printMessage(video_stream,template, argp, video_string);
+			}
+			break;
+
+		case ERROR_LEVEL:
+			if(logType!=TRACE && logType!=DEBUG && logType!=INFO && logType!=WARNING)
+			{
+				_printMessage(video_stream,template, argp, video_string);
+			}
+			break;
+
+		case FATAL_LEVEL:
+			if(logType!=TRACE && logType!=DEBUG && logType!=INFO && logType!=WARNING && logType!=ERROR)
+			{
+				_printMessage(video_stream,template, argp, video_string);
+			}
+			break;
+
+		default:
+			_printMessage(video_stream,template, argp, video_string);
+			break;
+		}
+
+	if (file_stream!=NULL)
+		switch (_file_log_level)
+		{
+		case OFF_LEVEL:
+			break;
+
+		case ALL_LEVEL:
+			_printMessage(file_stream,template, argp, file_string);
+			break;
+
+		case DEBUG_LEVEL:
+			if(logType!=TRACE )
+			{
+				_printMessage(file_stream,template, argp, file_string);
+			}
+			break;
+
+		case INFO_LEVEL:
+			if(logType!=TRACE && logType!=DEBUG)
+			{
+				_printMessage(file_stream,template, argp, file_string);
+			}
+			break;
+
+		case WARNING_LEVEL:
+			if(logType!=TRACE && logType!=DEBUG && logType!=INFO)
+			{
+				_printMessage(file_stream,template, argp, file_string);
+			}
+			break;
+
+		case ERROR_LEVEL:
+			if(logType!=TRACE && logType!=DEBUG && logType!=INFO && logType!=WARNING)
+			{
+				_printMessage(file_stream,template, argp, file_string);
+			}
+			break;
+
+		case FATAL_LEVEL:
+			if(logType!=TRACE && logType!=DEBUG && logType!=INFO && logType!=WARNING && logType!=ERROR)
+			{
+				_printMessage(file_stream,template, argp, file_string);
+			}
+			break;
+
+		default:
+			_printMessage(file_stream,template, argp, file_string);
+			break;
+		}
+
+
+	/*	Deprecated Section*/
+	if(_log_mode!= DISABLED_LOG)
 	{
 
-		if(video_stream && logMode!=FILE_LOG)
+		if(video_stream && _log_mode!=FILE_LOG)
 		{
 
 			fprintf(video_stream, "%s",video_string);
@@ -286,7 +463,7 @@ _log(const LogType logType, const char *file, const char *function, int line,
 			fflush(video_stream);
 		}
 
-		if (file_stream && logMode!=VIDEO_LOG)
+		if (file_stream && _log_mode!=VIDEO_LOG)
 		{
 
 			fprintf(file_stream, "%s", file_string);
@@ -295,6 +472,7 @@ _log(const LogType logType, const char *file, const char *function, int line,
 			fflush(file_stream);
 		}
 	}
+	/*	Deprecated Section*/
 
 	va_end(argp);
 }

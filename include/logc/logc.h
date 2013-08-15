@@ -54,7 +54,7 @@
  * \file logc.h
  * \brief The logc header
  *
-**/
+ **/
 
 
 #ifndef _LOGC_H_
@@ -63,31 +63,68 @@
 #include <stdio.h>
 #include <string.h>
 
-#define DEFAULT_FILE_LOG	NULL /**< Default Log File Value */
-#define DEFAULT_VIDEO_LOG	stderr /**< Default Video Log Value */
+#ifdef __GNUC__
+	#ifndef attribute_deprecated
+		#define attribute_deprecated __attribute__((deprecated))
+	#endif
+#endif
+
+#define DEFAULT_FILE_LOG	NULL		 /**< Default Log File Value */
+#define DEFAULT_VIDEO_LOG	stderr		 /**< Default Video Log Value */
 
 #define DEFAULT_LOG_MODE	DISABLED_LOG /**< Default Log Mode*/
 #define DEFAULT_DEBUG_MODE	DISABLED_LOG /**< Default Debug Mode */
 
-#define log(logType, template, ...) _log(logType, __FILE__,  __FUNCTION__, __LINE__, template, ## __VA_ARGS__)/**< To print a log output*/
-#define debug(template, ...)	_log(DEBUG, __FILE__,  __FUNCTION__, __LINE__, template, ## __VA_ARGS__)/**< To print a log output*/
+#define DEFAULT_LOG_LEVEL	ALL_LEVEL	 /**< Default Log Mode*/
+
+#define log(logType, template, ...) _log(logType, __FILE__,  __FUNCTION__, __LINE__, template, ## __VA_ARGS__)	/**< To print a generic log output*/
+
+#define trace(template, ...)	_log(TRACE, __FILE__,  __FUNCTION__, __LINE__, template, ## __VA_ARGS__)	/**< To print a trace output*/
+#define debug(template, ...)	_log(DEBUG, __FILE__,  __FUNCTION__, __LINE__, template, ## __VA_ARGS__)	/**< To print a debug output*/
+#define info(template, ...)		_log(INFO, __FILE__,  __FUNCTION__, __LINE__, template, ## __VA_ARGS__)		/**< To print a info output*/
+#define warning(template, ...)	_log(WARNING, __FILE__,  __FUNCTION__, __LINE__, template, ## __VA_ARGS__)	/**< To print a warning output*/
+#define error(template, ...)	_log(ERROR, __FILE__,  __FUNCTION__, __LINE__, template, ## __VA_ARGS__)	/**< To print a error output*/
+#define fatal(template, ...)	_log(FATAL, __FILE__,  __FUNCTION__, __LINE__, template, ## __VA_ARGS__)	/**< To print a fatal output*/
 
 /** Define How to log information*/
-typedef enum{
+typedef attribute_deprecated enum{
 	DISABLED_LOG, /**< Log Disabled*/
 	VIDEO_LOG, /**< Only Video Log */
 	FILE_LOG, /**< Only File Log*/
 	FILE_VIDEO_LOG /**< File and Video Log*/
-}LogMode;
+}LogMode; // Deprecated
 
 /** Is used into the log function to show the message relevance*/
 typedef enum
 {
-  ERROR,
-  WARNING,
-  INFO,
-  DEBUG
+	TRACE=1,
+	DEBUG=2,
+	INFO=3,
+	WARNING=4,
+	ERROR=5,
+	FATAL=6
 }LogType;
+
+typedef enum
+{
+	OFF_LEVEL=0,
+	ALL_LEVEL=1,
+	DEBUG_LEVEL=2,
+	INFO_LEVEL=3,
+	WARNING_LEVEL=4,
+	ERROR_LEVEL=5,
+	FATAL_LEVEL=6
+}LogLevel;
+
+static FILE *file_stream=NULL;
+static FILE *video_stream=NULL;
+
+static LogLevel _video_log_level = DEFAULT_LOG_LEVEL;
+static LogLevel _file_log_level = DEFAULT_LOG_LEVEL;
+
+
+static LogMode _log_mode = DEFAULT_LOG_MODE;		// deprecated
+static LogMode _debug_mode = DEFAULT_DEBUG_MODE;	// deprecated
 
 extern int
 removeFile(const char *);
@@ -99,7 +136,10 @@ extern int
 checkFileSize(const char *, const long);
 
 extern void
-initLog(LogMode, LogMode);
+initLog(LogMode, LogMode) attribute_deprecated;
+
+extern void
+initLogger(LogLevel, LogLevel);
 
 extern int
 openLogFile(const char *);
