@@ -175,6 +175,10 @@ void initLogger(LogLevel video_log_level, LogLevel file_log_level)
 	_video_log_level=video_log_level;
 	_file_log_level=file_log_level;
 
+
+	_log_mode=DEFAULT_LOG_MODE;
+	_debug_mode=DEFAULT_LOG_MODE;
+
 }
 
 /**
