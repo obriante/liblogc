@@ -23,82 +23,82 @@
 
 #define LOG_FILE_NAME	"/tmp/liblogc.test.log"
 
+#define	OFF_LEVEL_STRING "OFF_LEVEL"
+#define	ALL_LEVEL_STRING "ALL_LEVEL"
+#define DEBUG_LEVEL_STRING "DEBUG_LEVEL"
+#define INFO_LEVEL_STRING "INFO_LEVEL"
+#define WARNING_LEVEL_STRING "WARNING_LEVEL"
+#define ERROR_LEVEL_STRING "ERROR_LEVEL"
+#define FATAL_LEVEL_STRING "FATAL_LEVEL"
 
-void print_messages(const char *message)
+
+void print_messages(Logc_t* logger, const char *log_level_video, const char *log_level_file)
 {
-	trace(message);
-	debug(message);
-	info(message);
-	warning(message);
-	error(message);
-	fatal(message);
+	trace(logger, "Video Log Level: %s, File Log Level: %s", log_level_video,log_level_file);
+	debug(logger, "Video Log Level: %s, File Log Level: %s", log_level_video,log_level_file);
+	info(logger, "Video Log Level: %s, File Log Level: %s", log_level_video,log_level_file);
+	warning(logger, "Video Log Level: %s, File Log Level: %s", log_level_video,log_level_file);
+	error(logger, "Video Log Level: %s, File Log Level: %s", log_level_video,log_level_file);
+	fatal(logger, "Video Log Level: %s, File Log Level: %s", log_level_video,log_level_file);
 }
 
 
 int main(int argc, char *argv[])
 {
-	print_messages("No Log initialization");
+	Logc_t *logger=init_logger(ALL_LEVEL, OFF_LEVEL, NULL);
+	//info(logger, "liblogc version:\t%s", logc_version());
+	print_messages(logger, ALL_LEVEL_STRING, OFF_LEVEL_STRING );
 
-	/*
-	initLog(VIDEO_LOG, VIDEO_LOG);
-	print_messages("log mode: VIDEO_LOG, video mode: VIDEO_LOG");
-	uninitLog();
+	if(!uninitLog(logger)){
+		logger=init_logger(OFF_LEVEL, ALL_LEVEL, LOG_FILE_NAME);
+		open_log_file(logger,0);
+		print_messages(logger, OFF_LEVEL_STRING, ALL_LEVEL_STRING);
+	}
 
-	initLog(FILE_VIDEO_LOG, FILE_VIDEO_LOG);
-	openVideoLog(stdout);
-	print_messages("log mode: FILE_VIDEO_LOG, video mode: FILE_VIDEO_LOG");
-	uninitLog();*/
+	if(!uninitLog(logger)){
+		logger=init_logger(ALL_LEVEL, ALL_LEVEL, LOG_FILE_NAME);
+		open_log_file(logger, -1);
+		print_messages(logger,ALL_LEVEL_STRING, ALL_LEVEL_STRING);
+	}
 
-	initLogger(ALL_LEVEL, OFF_LEVEL);
-	print_messages("Video Log Level: ALL_LEVEL, File Log Level: OFF_LEVEL");
-	uninitLog();
+	if(!uninitLog(logger)){
+		logger=init_logger(DEBUG_LEVEL, DEBUG_LEVEL, LOG_FILE_NAME);
+		open_log_file(logger, -1);
+		print_messages(logger, DEBUG_LEVEL_STRING, DEBUG_LEVEL_STRING);
+	}
 
-	initLogger(OFF_LEVEL, ALL_LEVEL);
-	checkFileSize(LOG_FILE_NAME, 0);
-	openLogFile(LOG_FILE_NAME);
-	print_messages("Video Log Level: OFF_LEVEL, File Log Level: ALL_LEVEL");
-	uninitLog();
+	if(!uninitLog(logger)){
+		logger=init_logger(INFO_LEVEL, INFO_LEVEL, LOG_FILE_NAME);
+		open_log_file(logger, -1);
+		print_messages(logger, INFO_LEVEL_STRING, INFO_LEVEL_STRING);
+	}
 
-	initLogger(ALL_LEVEL, ALL_LEVEL);
-	openLogFile(LOG_FILE_NAME);
-	print_messages("Video Log Level: ALL_LEVEL, File Log Level: ALL_LEVEL");
-	uninitLog();
+	if(!uninitLog(logger)){
+		logger=init_logger(WARNING_LEVEL, WARNING_LEVEL, LOG_FILE_NAME);
+		open_log_file(logger, -1);
+		print_messages(logger, WARNING_LEVEL_STRING, WARNING_LEVEL_STRING);
+	}
 
-	initLogger(DEBUG_LEVEL, DEBUG_LEVEL);
-	openLogFile(LOG_FILE_NAME);
-	print_messages("Video Log Level: DEBUG_LEVEL, File Log Level: DEBUG_LEVEL");
-	uninitLog();
+	if(!uninitLog(logger)){
+		logger=init_logger(ERROR_LEVEL, ERROR_LEVEL, LOG_FILE_NAME);
+		open_log_file(logger, -1);
+		print_messages(logger, ERROR_LEVEL_STRING, ERROR_LEVEL_STRING);
+	}
 
-	initLogger(INFO_LEVEL, INFO_LEVEL);
-	openLogFile(LOG_FILE_NAME);
-	print_messages("Video Log Level: INFO_LEVEL, File Log Level: INFO_LEVEL");
-	uninitLog();
+	if(!uninitLog(logger)){
+		logger=init_logger(FATAL_LEVEL, FATAL_LEVEL, LOG_FILE_NAME);
+		open_log_file(logger, -1);
+		print_messages(logger, FATAL_LEVEL_STRING, FATAL_LEVEL_STRING);
+	}
 
-	initLogger(WARNING_LEVEL, WARNING_LEVEL);
-	openLogFile(LOG_FILE_NAME);
-	print_messages("Video Log Level: WARNING_LEVEL, File Log Level: WARNING_LEVEL");
-	uninitLog();
+	if(!uninitLog(logger)){
+		logger=init_logger(ALL_LEVEL, ALL_LEVEL, LOG_FILE_NAME);
+		set_log_video(logger, stdout);
+		open_log_file(logger, -1);
+		print_messages(logger, ALL_LEVEL_STRING, ALL_LEVEL_STRING);
+	}
 
-	initLogger(ERROR_LEVEL, ERROR_LEVEL);
-	openLogFile(LOG_FILE_NAME);
-	print_messages("Video Log Level: ERROR_LEVEL, File Log Level: ERROR_LEVEL");
-	uninitLog();
-
-	initLogger(FATAL_LEVEL, FATAL_LEVEL);
-	openLogFile(LOG_FILE_NAME);
-	print_messages("Video Log Level: FATAL_LEVEL, File Log Level: FATAL_LEVEL");
-	uninitLog();
-
-	initLogger(ALL_LEVEL, ALL_LEVEL);
-	openLogFile(LOG_FILE_NAME);
-	openVideoLog(stdout);
-	print_messages("Video Log Level: ALL_LEVEL, File Log Level: ALL_LEVEL");
-	uninitLog();
-
-	initLog(FILE_VIDEO_LOG, FILE_VIDEO_LOG);
-	openLogFile(LOG_FILE_NAME);
-	openVideoLog(stderr);
-	print_messages("log mode: FILE_VIDEO_LOG [DEPRECATED], video mode: FILE_VIDEO_LOG [DEPRECATED]");
-	uninitLog();
+	if(logger)
+		uninitLog(logger);
 
 }

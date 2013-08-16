@@ -4,3 +4,11 @@
 [2013-07-21]
 	* Relesed Version 1.0.1
  		- Color output for linux consol
+
+[2013-08-16 ]
+	* Version 1.1.0-RC1
+ 		- multilogger 
+ 		- NO retro compatible
+ 		- various bugs fix
+ 		- Added version function
+ 		- Reorganized logging functions

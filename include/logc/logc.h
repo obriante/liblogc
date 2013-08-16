@@ -60,97 +60,103 @@
 #ifndef _LOGC_H_
 #define _LOGC_H_
 
-#include <stdio.h>
-#include <string.h>
+#include "logcver.h"
+#include <logc/deprecated.h>
 
-#ifdef __GNUC__
-	#ifndef attribute_deprecated
-		#define attribute_deprecated __attribute__((deprecated))
-	#endif
+#include <stdio.h>
+
+#define TRACE_TYPE_STRING		" TRACE   "
+#define DEBUG_TYPE_STRING		" DEBUG   "
+#define INFO_TYPE_STRING		" INFO    "
+#define WARNING_TYPE_STRING 	" WARNING "
+#define ERROR_TYPE_STRING		" ERROR   "
+#define FATAL_TYPE_STRING		" FATAL   "
+
+
+#ifdef __linux__
+
+#define RESET   "\033[0m"
+#define BLACK   "\033[30m"      /* Black */
+#define RED     "\033[31m"      /* Red */
+#define GREEN   "\033[32m"      /* Green */
+#define YELLOW  "\033[33m"      /* Yellow */
+#define BLUE    "\033[34m"      /* Blue */
+#define MAGENTA "\033[35m"      /* Magenta */
+#define CYAN    "\033[36m"      /* Cyan */
+#define WHITE   "\033[37m"      /* White */
+
+#define TRACE_TYPE_COLOR		CYAN
+#define DEBUG_TYPE_COLOR		BLUE
+#define INFO_TYPE_COLOR			GREEN
+#define WARNING_TYPE_COLOR		YELLOW
+#define ERROR_TYPE_COLOR		RED
+#define FATAL_TYPE_COLOR		MAGENTA
+
 #endif
+
+
 
 #define DEFAULT_FILE_LOG	NULL		 /**< Default Log File Value */
 #define DEFAULT_VIDEO_LOG	stderr		 /**< Default Video Log Value */
 
-#define DEFAULT_LOG_MODE	DISABLED_LOG /**< Default Log Mode*/
-#define DEFAULT_DEBUG_MODE	DISABLED_LOG /**< Default Debug Mode */
+#define DEFAULT_VIDEO_LOG_LEVEL	ALL_LEVEL	 /**< Default Log Mode*/
+#define DEFAULT_FILE_LOG_LEVEL	ALL_LEVEL	 /**< Default Log Mode*/
 
-#define DEFAULT_LOG_LEVEL	ALL_LEVEL	 /**< Default Log Mode*/
 
-#define log(logType, template, ...) _log(logType, __FILE__,  __FUNCTION__, __LINE__, template, ## __VA_ARGS__)	/**< To print a generic log output*/
+#define log(logc, logType, template, ...)	_log(logc, logType, __FILE__,  __FUNCTION__, __LINE__, template, ## __VA_ARGS__)	/**< To print a generic log output*/
 
-#define trace(template, ...)	_log(TRACE, __FILE__,  __FUNCTION__, __LINE__, template, ## __VA_ARGS__)	/**< To print a trace output*/
-#define debug(template, ...)	_log(DEBUG, __FILE__,  __FUNCTION__, __LINE__, template, ## __VA_ARGS__)	/**< To print a debug output*/
-#define info(template, ...)		_log(INFO, __FILE__,  __FUNCTION__, __LINE__, template, ## __VA_ARGS__)		/**< To print a info output*/
-#define warning(template, ...)	_log(WARNING, __FILE__,  __FUNCTION__, __LINE__, template, ## __VA_ARGS__)	/**< To print a warning output*/
-#define error(template, ...)	_log(ERROR, __FILE__,  __FUNCTION__, __LINE__, template, ## __VA_ARGS__)	/**< To print a error output*/
-#define fatal(template, ...)	_log(FATAL, __FILE__,  __FUNCTION__, __LINE__, template, ## __VA_ARGS__)	/**< To print a fatal output*/
-
-/** Define How to log information*/
-typedef attribute_deprecated enum{
-	DISABLED_LOG, /**< Log Disabled*/
-	VIDEO_LOG, /**< Only Video Log */
-	FILE_LOG, /**< Only File Log*/
-	FILE_VIDEO_LOG /**< File and Video Log*/
-}LogMode; // Deprecated
+#define trace(logc, template, ...)			_log(logc, TRACE, __FILE__,  __FUNCTION__, __LINE__, template, ## __VA_ARGS__)	/**< To print a trace output*/
+#define debug(logc, template, ...)			_log(logc, DEBUG, __FILE__,  __FUNCTION__, __LINE__, template, ## __VA_ARGS__)	/**< To print a debug output*/
+#define info(logc, template, ...)			_log(logc, INFO, __FILE__,  __FUNCTION__, __LINE__, template, ## __VA_ARGS__)		/**< To print a info output*/
+#define warning(logc, template, ...)		_log(logc, WARNING, __FILE__,  __FUNCTION__, __LINE__, template, ## __VA_ARGS__)	/**< To print a warning output*/
+#define error(logc, template, ...)			_log(logc, ERROR, __FILE__,  __FUNCTION__, __LINE__, template, ## __VA_ARGS__)	/**< To print a error output*/
+#define fatal(logc, template, ...)			_log(logc, FATAL, __FILE__,  __FUNCTION__, __LINE__, template, ## __VA_ARGS__)	/**< To print a fatal output*/
 
 /** Is used into the log function to show the message relevance*/
 typedef enum
 {
-	TRACE=1,
-	DEBUG=2,
-	INFO=3,
-	WARNING=4,
-	ERROR=5,
-	FATAL=6
+	TRACE=0,
+	DEBUG=5,
+	INFO=10,
+	WARNING=15,
+	ERROR=20,
+	FATAL=25
 }LogType;
 
 typedef enum
 {
 	OFF_LEVEL=0,
-	ALL_LEVEL=1,
-	DEBUG_LEVEL=2,
-	INFO_LEVEL=3,
-	WARNING_LEVEL=4,
-	ERROR_LEVEL=5,
-	FATAL_LEVEL=6
+	ALL_LEVEL=5,
+	DEBUG_LEVEL=10,
+	INFO_LEVEL=15,
+	WARNING_LEVEL=20,
+	ERROR_LEVEL=25,
+	FATAL_LEVEL=30
 }LogLevel;
 
-static FILE *file_stream=NULL;
-static FILE *video_stream=NULL;
+typedef struct{
 
-static LogLevel _video_log_level = DEFAULT_LOG_LEVEL;
-static LogLevel _file_log_level = DEFAULT_LOG_LEVEL;
+	char * log_file_name;
 
+	FILE *file_stream;
+	FILE *video_stream;
+	LogLevel video_log_level;
+	LogLevel file_log_level;
+}Logc_t;
 
-static LogMode _log_mode = DEFAULT_LOG_MODE;		// deprecated
-static LogMode _debug_mode = DEFAULT_DEBUG_MODE;	// deprecated
-
-extern int
-removeFile(const char *);
-
-extern long
-getFileSize(const char *);
+extern Logc_t *
+init_logger(LogLevel, LogLevel, const char *);
 
 extern int
-checkFileSize(const char *, const long);
-
-extern void
-initLog(LogMode, LogMode) attribute_deprecated;
-
-extern void
-initLogger(LogLevel, LogLevel);
+open_log_file(Logc_t *, long);
 
 extern int
-openLogFile(const char *);
-
-extern void openVideoLog(FILE *);
+remove_log_file(Logc_t *);
 
 extern void
-_log(const LogType, const char *, const char *, int, const char *, ...);
+set_log_video(Logc_t*, FILE *);
 
-
-extern void
-uninitLog();
+extern int
+uninit_log(Logc_t *);
 
 #endif /* _LOGC_H_ */

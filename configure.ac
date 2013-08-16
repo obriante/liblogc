@@ -1,16 +1,25 @@
 dnl Process this file with autoconf to produce a configure script.
 
-AC_PREREQ(2.59)
+AC_PREREQ(2.57)
+AC_INIT([logc], [1.1.0], [a logging library for C])
+AC_CONFIG_SRCDIR(configure.ac)
 
-AC_INIT(liblogc, 1.0)
+AC_CANONICAL_SYSTEM
 
-# prevent setting xFLAGS to default of -g -O2
-if test x"$CFLAGS" = x""; then
-  AC_SUBST(CFLAGS, [ ])
-fi
-if test x"$CXXFLAGS" = x""; then
-  AC_SUBST(CXXFLAGS, [ ])
-fi
+LOGC_MAJOR_VERSION=$(echo $PACKAGE_VERSION | cut -d. -f1)
+LOGC_MINOR_VERSION=$(echo $PACKAGE_VERSION | cut -d. -f2)
+LOGC_MICRO_VERSION=$(echo $PACKAGE_VERSION | cut -d. -f3)
+LOGC_EXTRA_VERSION=$(echo $PACKAGE_VERSION | cut -d. -f4)
+
+LOGC_VERSION=$LOGC_MAJOR_VERSION.$LOGC_MINOR_VERSION.$LOGC_MICRO_VERSION${SNAPSHOT:+.$SNAPSHOT}
+
+LT_LOGC_VERSION=1:1:0
+
+AC_SUBST(LOGC_MAJOR_VERSION)
+AC_SUBST(LOGC_MINOR_VERSION)
+AC_SUBST(LOGC_MICRO_VERSION)
+AC_SUBST(LT_VERSION)
+AC_SUBST(LOGC_VERSION)
 
 AC_PROG_CC
 AC_PROG_CXX
@@ -38,17 +47,6 @@ AC_CONFIG_SUBDIRS( liblogc )
 	liblogc_LIBS="\$(top_builddir)/src/liblogc.a"
 AC_SUBST(liblogc_CFLAGS)
 AC_SUBST(liblogc_LIBS)
-
-dnl DEBUG
-AC_ARG_ENABLE(debug,
-AS_HELP_STRING([--enable-debug], [enable debugging, default: no]),
-[case "${enableval}" in
-             yes) debug=true ;;
-             no)  debug=false ;;
-             *)   AC_MSG_ERROR([bad value ${enableval} for --enable-debug]) ;;
-esac], [debug=false])
-
-AM_CONDITIONAL(DEBUG, test x"$debug" = x"true")
 
 AC_PROG_RANLIB
 
