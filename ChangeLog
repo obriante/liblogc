@@ -6,9 +6,18 @@
  		- Color output for linux consol
 
 [2013-08-16 ]
-	* Version 1.1.0-RC1
+	* Version 1.1.0-RC1 - No retro compatible
  		- multilogger 
- 		- NO retro compatible
- 		- various bugs fix
+ 		- fixbugs
  		- Added version function
  		- Reorganized logging functions
+
+[2013-08-16 ]
+	* Version 1.1.0-RC2
+		- getters
+		- setters
+		- multilog tests
+		- fix autotools
+		- fix version function
+		- fix bugs 
+ 

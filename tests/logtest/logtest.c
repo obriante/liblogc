@@ -19,6 +19,8 @@
  * Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+#include <stdio.h>
+#include <stdlib.h>
 #include <logc/logc.h>
 
 #define LOG_FILE_NAME	"/tmp/liblogc.test.log"
@@ -34,20 +36,40 @@
 
 void print_messages(Logc_t* logger, const char *log_level_video, const char *log_level_file)
 {
-	trace(logger, "Video Log Level: %s, File Log Level: %s", log_level_video,log_level_file);
-	debug(logger, "Video Log Level: %s, File Log Level: %s", log_level_video,log_level_file);
-	info(logger, "Video Log Level: %s, File Log Level: %s", log_level_video,log_level_file);
-	warning(logger, "Video Log Level: %s, File Log Level: %s", log_level_video,log_level_file);
-	error(logger, "Video Log Level: %s, File Log Level: %s", log_level_video,log_level_file);
-	fatal(logger, "Video Log Level: %s, File Log Level: %s", log_level_video,log_level_file);
+
+	char* message=NULL;
+	asprintf(&message, "Video Log Level: %s, File Log Level: %s", log_level_video, log_level_file);
+
+	trace(logger, message);
+	debug(logger, message);
+	info(logger, message);
+	warning(logger, message);
+	error(logger, message);
+	fatal(logger, message);
+
+	free(message);
+	message=NULL;
 }
 
 
 int main(int argc, char *argv[])
 {
-	Logc_t *logger=init_logger(ALL_LEVEL, stderr, OFF_LEVEL, LOG_FILE_NAME, 0);
 
-	info(logger, "liblogc version:\t%s", logc_version());
+	Logc_t *logger=init_logger(ALL_LEVEL, stderr, OFF_LEVEL, LOG_FILE_NAME);
+	remove_log_file(logger);
+	open_log_filestream(logger);
+
+	char* version=NULL;
+	asprintf(&version,"liblogc version:\t%s", logc_version());
+	info(logger, version);
+	free(version);
+	version=NULL;
+
+	char* logger_name=NULL;
+	asprintf(&logger_name,"logger name:\t%s", get_logger_name(logger));
+	info(logger, logger_name);
+	free(logger_name);
+	version=NULL;
 
 	print_messages(logger, ALL_LEVEL_STRING, OFF_LEVEL_STRING );
 

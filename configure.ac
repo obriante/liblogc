@@ -13,7 +13,7 @@ LOGC_EXTRA_VERSION=$(echo $PACKAGE_VERSION | cut -d. -f4)
 
 LOGC_VERSION=$LOGC_MAJOR_VERSION.$LOGC_MINOR_VERSION.$LOGC_MICRO_VERSION${SNAPSHOT:+.$SNAPSHOT}
 
-LT_LOGC_VERSION=1:1:0
+LT_LOGC_VERSION=1.1.0
 
 AC_SUBST(LOGC_MAJOR_VERSION)
 AC_SUBST(LOGC_MINOR_VERSION)
@@ -53,6 +53,10 @@ AC_PROG_RANLIB
 AC_CONFIG_FILES(
 Makefile
 src/Makefile
+include/Makefile
+include/logc/Makefile
 tests/Makefile
+tests/logtest/Makefile
+tests/multilog/Makefile
 )
 AC_OUTPUT

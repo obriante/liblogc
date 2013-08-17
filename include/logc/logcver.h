@@ -22,7 +22,7 @@
 
 #define LOGC_COPYRIGHT "2012 Orazio Briante <orazio.briante@hotmail.it>."
 
-#define LOGC_VERSION "1.1.0"
+#define LOGC_VERSION "1.1.0-RC2"
 
 #define LOGC_VERSION_MAJOR 1
 #define LOGC_VERSION_MINOR 1
