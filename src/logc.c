@@ -1,5 +1,5 @@
 /* 
- * liblogc - C Library for video and file log
+ * liblogger - C Library for video and file log
  * Copyright (C) 2012 Orazio Briante orazio.briante@hotmail.it
  *
  * This library is free software; you can redistribute it and/or
@@ -18,11 +18,10 @@
  */
 
 /**
- * \file logc.c
- * \brief The logc functions
+ * \file logger.c
+ * \brief The logger functions
  *
  **/
-
 
 #include <logc/logc.h>
 
@@ -30,266 +29,267 @@
 #include <stdarg.h>
 #include <time.h>
 
-
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
-char* _time2String(){
+/*
+ * 	FREE
+ */
+
+void free_log_filename(Logc_t *logger) {
+
+	if (logger->log_filename) {
+		free(logger->log_filename);
+		logger->log_filename = NULL;
+	}
+}
+
+void free_time_format_template(Logc_t *logger) {
+	if (logger->time_format_template) {
+		free(logger->time_format_template);
+		logger->time_format_template = NULL;
+	}
+}
+
+void free_log_template(Logc_t *logger) {
+	if (logger->log_template) {
+		free(logger->log_template);
+		logger->log_template = NULL;
+	}
+}
+
+/*
+ * ALLOC_STRING
+ */
+
+char *
+alloc_string(const char* string) {
+	char *output = NULL;
+
+	if (string)
+		asprintf(&output, "%s", string);
+
+	return output;
+}
+
+/*
+ *  INTERNAL_FUNCTION
+ */
+
+char* _time2String(Logc_t *logger) {
 	time_t now;
 	struct tm tmNow;
-	int timeString_size=26*sizeof(char)*8;
-	char* timeString=(char*)malloc(timeString_size);
-	now = time(NULL );
+	int timeString_size = 26 * sizeof(char) * 8;
+	char* timeString = (char*) malloc(timeString_size);
+	now = time(NULL);
 	localtime_r(&now, &tmNow);
 	strftime(timeString, timeString_size, "%Y-%m-%d %H:%M:%S", &tmNow);
 	return timeString;
 }
 
-void _printMessage(FILE *stream, const char *template, va_list argp, const char *string)
-{
-	fprintf(stream, "%s",string);
+void _printMessage(FILE *stream, const char *template, va_list argp,
+		const char *string) {
+	fprintf(stream, "%s", string);
 	vfprintf(stream, template, argp);
 	fprintf(stream, "\n");
 	fflush(stream);
 }
 
-void
-_log(Logc_t *logc, const LogType logType, const char *file, const char *function, int line,
-		const char *template, ...)
-{
+void _log(Logc_t *logger, const LogType logType, const char *file,
+		const char *function, int line, const char *template, ...) {
 
 	va_list argp;
 	va_start(argp, template);
 
-	char *file_string=NULL;
-	char *video_string=NULL;
-	char *string_format="%s %s [%s] %s:%i - ";
+	char *file_string = NULL;
+	char *video_string = NULL;
+	char *string_format = "%s %s [%s] %s:%i - ";
 
-	char *timeString=_time2String();
+	char *timeString = _time2String(logger);
 
-	char*  _template=NULL;
+	char* _template = NULL;
 	asprintf(&_template, "%s", template);
 
-	char* type=NULL;
-	char* color=RESET;
+	char* type = NULL;
+	char* color = RESET;
 
-	switch (logType)
-	{
+	switch (logType) {
 	case TRACE:
-		type=TRACE_TYPE_STRING;
+		type = TRACE_TYPE_STRING;
 		break;
 
 	case DEBUG:
-		type=DEBUG_TYPE_STRING;
+		type = DEBUG_TYPE_STRING;
 		break;
 
 	case INFO:
-		type=INFO_TYPE_STRING;
+		type = INFO_TYPE_STRING;
 		break;
 
 	case WARNING:
-		type=WARNING_TYPE_STRING;
+		type = WARNING_TYPE_STRING;
 		break;
 
 	case ERROR:
-		type=ERROR_TYPE_STRING;
+		type = ERROR_TYPE_STRING;
 		break;
 
 	case FATAL:
-		type=FATAL_TYPE_STRING;
+		type = FATAL_TYPE_STRING;
 		break;
 
 	default:
-		type=TRACE_TYPE_STRING;
+		type = TRACE_TYPE_STRING;
 		break;
 	}
 
 #ifdef __linux__
 
-	switch (logType)
-	{
+	switch (logType) {
 	case TRACE:
-		color=TRACE_TYPE_COLOR;
+		color = TRACE_TYPE_COLOR;
 		break;
 
 	case DEBUG:
-		color=DEBUG_TYPE_COLOR;
+		color = DEBUG_TYPE_COLOR;
 		break;
 
 	case INFO:
-		color=INFO_TYPE_COLOR;
+		color = INFO_TYPE_COLOR;
 		break;
 
 	case WARNING:
-		color=WARNING_TYPE_COLOR;
+		color = WARNING_TYPE_COLOR;
 		break;
 
 	case ERROR:
-		color=ERROR_TYPE_COLOR;
+		color = ERROR_TYPE_COLOR;
 		break;
 
 	case FATAL:
-		color=FATAL_TYPE_COLOR;
+		color = FATAL_TYPE_COLOR;
 		break;
 
 	default:
-		color=TRACE_TYPE_COLOR;
+		color = TRACE_TYPE_COLOR;
 		break;
 	}
 
-	char* typeColor=NULL;
-	asprintf(&typeColor, "%s%s%s",color,type,RESET);
-	asprintf(&video_string, string_format, timeString, typeColor, function, file, line);
-	asprintf(&file_string,  string_format, timeString, type, function, file, line);
+	char* typeColor = NULL;
+	asprintf(&typeColor, "%s%s%s", color, type, RESET);
+	asprintf(&video_string, string_format, timeString, typeColor, function,
+			file, line);
+	asprintf(&file_string, string_format, timeString, type, function, file,
+			line);
 #else
 	asprintf(&video_string, string_format, timeString, type, function, file, line);
-	asprintf(&file_string,  string_format, timeString, type, function, file, line);
+	asprintf(&file_string, string_format, timeString, type, function, file, line);
 #endif
 
-	if (logc->video_stream!=NULL)
-		switch (logc->video_log_level)
-		{
+	if (logger->video_stream != NULL)
+		switch (logger->video_log_level) {
 		case OFF_LEVEL:
 			break;
 
 		case ALL_LEVEL:
-			_printMessage(logc->video_stream,template, argp, video_string);
+			_printMessage(logger->video_stream, template, argp, video_string);
 			break;
 
 		case DEBUG_LEVEL:
-			if(logType!=TRACE )
-			{
-				_printMessage(logc->video_stream,template, argp, video_string);
+			if (logType != TRACE) {
+				_printMessage(logger->video_stream, template, argp, video_string);
 			}
 			break;
 
 		case INFO_LEVEL:
-			if(logType!=TRACE && logType!=DEBUG)
-			{
-				_printMessage(logc->video_stream,template, argp, video_string);
+			if (logType != TRACE && logType != DEBUG) {
+				_printMessage(logger->video_stream, template, argp, video_string);
 			}
 			break;
 
 		case WARNING_LEVEL:
-			if(logType!=TRACE && logType!=DEBUG && logType!=INFO)
-			{
-				_printMessage(logc->video_stream,template, argp, video_string);
+			if (logType != TRACE && logType != DEBUG && logType != INFO) {
+				_printMessage(logger->video_stream, template, argp, video_string);
 			}
 			break;
 
 		case ERROR_LEVEL:
-			if(logType!=TRACE && logType!=DEBUG && logType!=INFO && logType!=WARNING)
-			{
-				_printMessage(logc->video_stream,template, argp, video_string);
+			if (logType != TRACE && logType != DEBUG && logType != INFO
+					&& logType != WARNING) {
+				_printMessage(logger->video_stream, template, argp, video_string);
 			}
 			break;
 
 		case FATAL_LEVEL:
-			if(logType!=TRACE && logType!=DEBUG && logType!=INFO && logType!=WARNING && logType!=ERROR)
-			{
-				_printMessage(logc->video_stream,template, argp, video_string);
+			if (logType != TRACE && logType != DEBUG && logType != INFO
+					&& logType != WARNING && logType != ERROR) {
+				_printMessage(logger->video_stream, template, argp, video_string);
 			}
 			break;
 
 		default:
-			_printMessage(logc->video_stream,template, argp, video_string);
+			_printMessage(logger->video_stream, template, argp, video_string);
 			break;
 		}
 
-	if (logc->file_stream!=NULL)
-		switch (logc->file_log_level)
-		{
+	if (logger->file_stream != NULL)
+		switch (logger->file_log_level) {
 		case OFF_LEVEL:
 			break;
 
 		case ALL_LEVEL:
-			_printMessage(logc->file_stream,template, argp, file_string);
+			_printMessage(logger->file_stream, template, argp, file_string);
 			break;
 
 		case DEBUG_LEVEL:
-			if(logType!=TRACE )
-			{
-				_printMessage(logc->file_stream,template, argp, file_string);
+			if (logType != TRACE) {
+				_printMessage(logger->file_stream, template, argp, file_string);
 			}
 			break;
 
 		case INFO_LEVEL:
-			if(logType!=TRACE && logType!=DEBUG)
-			{
-				_printMessage(logc->file_stream,template, argp, file_string);
+			if (logType != TRACE && logType != DEBUG) {
+				_printMessage(logger->file_stream, template, argp, file_string);
 			}
 			break;
 
 		case WARNING_LEVEL:
-			if(logType!=TRACE && logType!=DEBUG && logType!=INFO)
-			{
-				_printMessage(logc->file_stream,template, argp, file_string);
+			if (logType != TRACE && logType != DEBUG && logType != INFO) {
+				_printMessage(logger->file_stream, template, argp, file_string);
 			}
 			break;
 
 		case ERROR_LEVEL:
-			if(logType!=TRACE && logType!=DEBUG && logType!=INFO && logType!=WARNING)
-			{
-				_printMessage(logc->file_stream,template, argp, file_string);
+			if (logType != TRACE && logType != DEBUG && logType != INFO
+					&& logType != WARNING) {
+				_printMessage(logger->file_stream, template, argp, file_string);
 			}
 			break;
 
 		case FATAL_LEVEL:
-			if(logType!=TRACE && logType!=DEBUG && logType!=INFO && logType!=WARNING && logType!=ERROR)
-			{
-				_printMessage(logc->file_stream,template, argp, file_string);
+			if (logType != TRACE && logType != DEBUG && logType != INFO
+					&& logType != WARNING && logType != ERROR) {
+				_printMessage(logger->file_stream, template, argp, file_string);
 			}
 			break;
 
 		default:
-			_printMessage(logc->file_stream,template, argp, file_string);
+			_printMessage(logger->file_stream, template, argp, file_string);
 			break;
 		}
 
 	va_end(argp);
 }
 
-
-/**
- * Delete a File
- * @param fileName The name of the file to delete
- *
- * @return 0 for operation success, 1 for operation failure
- * */
-int
-remove_log_file(Logc_t *logc)
-{
-	if (remove(logc->log_file_name))
-	{
-		log(logc, ERROR,"Can't delete: %s", logc->log_file_name);
-	}
-	else
-	{
-		log(logc, TRACE,"%s successfully deleted.", logc->log_file_name);
-		logc->file_stream=NULL;
-		return EXIT_SUCCESS;
-	}
-
-	return EXIT_FAILURE;
-
-}
-
-/**
- * Check File Dimension
- *
- * @param fileName The name of the file to check
- * @return The dimension of the file (long value)
- */
-
 long
-get_file_size(Logc_t *logc)
+get_file_size(Logc_t *logger)
 {
-	if (logc->log_file_name)
+	if (logger->log_filename)
 	{
 
-		FILE *fp = fopen(logc->log_file_name, "r");
+		FILE *fp = fopen(logger->log_filename, "r");
 
 		if (fp)
 		{
@@ -299,7 +299,7 @@ get_file_size(Logc_t *logc)
 
 			fclose(fp);
 
-			log(logc, TRACE,"%s dimension: %d", logc->log_file_name, sz);
+			trace(logger, "%s dimension: %d", logger->log_filename, sz);
 
 			return sz;
 		}
@@ -309,24 +309,99 @@ get_file_size(Logc_t *logc)
 	return -1;
 }
 
-Logc_t* init_logger(LogLevel video_log_level, LogLevel file_log_level, const char *log_file_name)
-{
+/*
+ *  SETTERS
+ */
 
-	Logc_t *logc=(Logc_t *)malloc(sizeof(Logc_t)*8);
+int set_log_file(Logc_t *logger, const char *filename, const long max_size) {
 
-	logc->video_stream = DEFAULT_VIDEO_LOG;
-	logc->file_stream = DEFAULT_FILE_LOG;
+	if (logger && filename)
+		if (!close_log_filestream(logger)) {
+			free_log_filename(logger);
+			logger->log_filename = alloc_string(filename);
+			if (logger->log_filename)
+				return open_log_filestream(logger, max_size);
 
-	if(log_file_name)
-		asprintf(&logc->log_file_name,"%s",log_file_name);
+		}
 
-	logc->video_log_level=video_log_level;
-	logc->file_log_level=file_log_level;
-
-
-	return logc;
+	return EXIT_FAILURE;
 }
 
+int set_time_format_template(Logc_t *logger, const char *template) {
+	if (logger && template) {
+		free_time_format_template(logger);
+		logger->time_format_template = alloc_string(template);
+
+		if (logger->time_format_template)
+			return EXIT_SUCCESS;
+	}
+
+	return EXIT_FAILURE;
+}
+
+int set_log_template(Logc_t *logger, const char *template) {
+
+	if (logger && template) {
+		free_log_template(logger);
+		logger->log_template = alloc_string(template);
+
+		if (logger->log_template)
+			return EXIT_SUCCESS;
+	}
+
+	return EXIT_FAILURE;
+}
+
+void set_video_log_level(Logc_t *logger, const LogLevel log_level) {
+	if (logger)
+		logger->video_log_level = log_level;
+}
+
+void set_file_log_level(Logc_t *logger, const LogLevel log_level) {
+	if (logger)
+		logger->file_log_level = log_level;
+}
+
+void set_log_videostream(Logc_t *logger, FILE *video_stream) {
+	if (logger)
+		logger->video_stream = video_stream;
+}
+
+/*
+ * GETTERS
+ */
+const char *
+get_log_filename(Logc_t *logger) {
+	return logger->log_filename;
+}
+
+const char*
+get_time_format_template(Logc_t *logger) {
+	return logger->time_format_template;
+}
+
+const char *
+get_log_template(Logc_t *logger) {
+	return logger->log_template;
+}
+
+const LogLevel get_video_log_level(Logc_t *logger) {
+	return logger->video_log_level;
+}
+
+const LogLevel get_file_log_level(Logc_t *logger) {
+	return logger->file_log_level;
+}
+
+FILE *
+get_log_videosteam(Logc_t *logger) {
+	return logger->file_stream;
+}
+
+FILE *
+get_log_filestream(Logc_t *logger) {
+	return logger->file_stream;
+}
 
 /**
  * Open a Log File called by name.
@@ -335,79 +410,118 @@ Logc_t* init_logger(LogLevel video_log_level, LogLevel file_log_level, const cha
  *
  * @return 0 for operation success, 1 for operation failure
  */
-int
-open_log_file(Logc_t *logc, const long size)
-{
 
-	if (logc->log_file_name)
+int open_log_filestream(Logc_t *logger, const long max_size) {
+	if (logger)
+		if (logger->log_filename) {
+
+			long real_size = get_file_size(logger);
+			if (real_size < max_size || max_size == -1) {
+
+				trace(logger, "Try Opening %s in append mode",
+						logger->log_filename);
+				logger->file_stream = fopen(logger->log_filename, "a");
+
+			} else {
+				trace(logger, "Try Opening %s in write mode",
+						logger->log_filename);
+				logger->file_stream = fopen(logger->log_filename, "w+");
+
+			}
+
+			if (logger->file_stream) {
+
+				return EXIT_SUCCESS;
+			}
+
+			trace(logger, "Failure Opening\t%s", logger->log_filename);
+		}
+
+	return EXIT_FAILURE;
+}
+
+int close_log_filestream(Logc_t *logger) {
+
+	if (logger->file_stream)
 	{
+		if (fclose(logger->file_stream) == EOF)
+			return EXIT_FAILURE;
 
-		long real_size=get_file_size(logc);
-		if (real_size<size || size==-1)
-		{
-
-			trace(logc, "Try Opening %s in append mode", logc->log_file_name);
-			logc->file_stream = fopen(logc->log_file_name, "a");
-
-		}
-		else
-		{
-			trace(logc, "Try Opening %s in write mode", logc->log_file_name);
-			logc->file_stream = fopen(logc->log_file_name, "w+");
-
-		}
-
-		if (logc->file_stream){
-
-			return EXIT_SUCCESS;
-		}
-
+		logger->file_stream = NULL;
 	}
 
-	trace(logc, "Failure Opening\t%s", logc->log_file_name);
+	if (logger->log_filename)
+		trace(logger, "%s successfully closed", logger->log_filename);
+
+	free_log_filename(logger);
+
+	if (logger->log_filename == NULL)
+		return EXIT_SUCCESS;
+
 	return EXIT_FAILURE;
 }
 
 /**
- * Change the Video stream
+ * Delete a File
+ * @param fileName The name of the file to delete
  *
- * @param video the new stream
- */
-void set_log_video(Logc_t *logc, FILE *video)
-{
-	logc-> video_stream=video;
+ * @return 0 for operation success, 1 for operation failure
+ * */
+int remove_log_file(Logc_t *logger) {
+	if (remove(logger->log_filename)) {
+		log(logger, ERROR, "Can't delete: %s", logger->log_filename);
+	} else {
+		trace(logger, "%s successfully deleted.", logger->log_filename);
+		logger->file_stream = NULL;
+		return EXIT_SUCCESS;
+	}
+
+	return EXIT_FAILURE;
+
+}
+
+Logc_t *
+init_logger(LogLevel video_level, FILE *video_stream, LogLevel file_level,
+		const char *log_filename, const long max_size) {
+
+	Logc_t *logger = (Logc_t *) malloc(sizeof(Logc_t) * 8);
+
+	if (logger) {
+		set_video_log_level(logger, video_level);
+		set_log_videostream(logger, video_stream);
+
+		set_file_log_level(logger, file_level);
+		set_log_file(logger, log_filename, max_size);
+
+		set_time_format_template(logger, DEFAULT_TIME_FORMAT);
+		set_log_template(logger, DEFAULT_LOG_TEMPLATE);
+	}
+
+	return logger;
+
 }
 
 /**
  * Uninitialize the Logging Process
  */
-int
-uninitLog(Logc_t *logc)
-{
+const int uninit_logger(Logc_t *logger) {
 
-	if (logc->file_stream)
-	{
-		if(fclose(logc->file_stream)==EOF)
+	if(logger->file_stream)
+		if (close_log_filestream(logger))
 			return EXIT_FAILURE;
 
-		logc->file_stream = NULL;
+	free_log_filename(logger);
+	free_time_format_template(logger);
+	free_log_template(logger);
 
-	}
+	logger->video_stream = NULL;
 
-	if(logc->log_file_name)
-	{
-		trace (logc, "%s successfully closed", logc->log_file_name);
-		free(logc->log_file_name);
-		logc->log_file_name=NULL;
-	}
 
-	logc->video_stream = NULL;
-
-	free(logc);
-	logc=NULL;
-
+	free(logger);
+	logger = NULL;
 
 	return EXIT_SUCCESS;
+
 }
 
 #ifdef __cplusplus

@@ -1,7 +1,7 @@
 # DOXYGEN SUPPORT
 include $(top_srcdir)/aminclude.am
 
-SUBDIRS = src example
+SUBDIRS = src tests
 
 EXTRA_DIST = \
 	autogen.sh \

@@ -21,7 +21,7 @@
 
 const char* logc_version(void)
 {
-    return LOGC_VERSION;
+    return VERSION;
 }
 
 

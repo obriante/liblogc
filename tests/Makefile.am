@@ -1,9 +1,9 @@
-noinst_PROGRAMS=logTest
+noinst_PROGRAMS=logtest
 
 logTest_SOURCES= \
-logTest.c
+logtest.c
 
-logTest_LDADD= \
+logtest_LDADD= \
 @liblogc_LIBS@
 
 

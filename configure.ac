@@ -53,6 +53,6 @@ AC_PROG_RANLIB
 AC_CONFIG_FILES(
 Makefile
 src/Makefile
-example/Makefile
+tests/Makefile
 )
 AC_OUTPUT
