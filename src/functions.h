@@ -18,21 +18,13 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LOGCVER_H_
-#define LOGCVER_H_
+#ifndef FUNCTIONS_H_
+#define FUNCTIONS_H_
 
-#define LOGC_COPYRIGHT "2012 - 2013 Orazio Briante <orazio.briante@hotmail.it>."
+extern char *
+alloc_string(const char *);
 
-#define LOGC_VERSION "1.1.0-RC2"
+extern char *
+time2String();
 
-#define LOGC_VERSION_MAJOR 1
-#define LOGC_VERSION_MINOR 1
-#define LOGC_VERSION_PATCH 0
-
-extern const char *
-logc_version(void);
-
-extern const char *
-logc_copyright(void);
-
-#endif /* LOGCVER_H_ */
+#endif /* FUNCTIONS_H_ */

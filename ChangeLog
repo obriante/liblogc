@@ -12,7 +12,7 @@
  		- Added version function
  		- Reorganized logging functions
 
-[2013-08-16 ]
+[2013-08-17 ]
 	* Version 1.1.0-RC2
 		- getters
 		- setters
@@ -20,4 +20,11 @@
 		- fix autotools
 		- fix version function
 		- fix bugs 
+		
+[2013-08-18 ]
+	* Version 1.1.0-RC3
+	- library check
+	- logger
+	- logger queue
+	- fix file_stream OFF
  

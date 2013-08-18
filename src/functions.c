@@ -18,21 +18,47 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LOGCVER_H_
-#define LOGCVER_H_
+#include "functions.h"
 
-#define LOGC_COPYRIGHT "2012 - 2013 Orazio Briante <orazio.briante@hotmail.it>."
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 
-#define LOGC_VERSION "1.1.0-RC2"
+#ifdef __cplusplus
+extern "C"
+  {
+#endif
 
-#define LOGC_VERSION_MAJOR 1
-#define LOGC_VERSION_MINOR 1
-#define LOGC_VERSION_PATCH 0
+/*
+ * ALLOC_STRING
+ */
 
-extern const char *
-logc_version(void);
+char *
+alloc_string(const char* string)
+{
+  char *output = NULL;
 
-extern const char *
-logc_copyright(void);
+  if (string)
+    asprintf(&output, "%s", string);
 
-#endif /* LOGCVER_H_ */
+  return output;
+}
+
+/*
+ *  INTERNAL_FUNCTION
+ */
+
+char* time2String(){
+time_t now;
+struct tm tmNow;
+int timeString_size=26*sizeof(char)*8;
+char* timeString=(char*)malloc(timeString_size);
+now = time(NULL );
+localtime_r(&now, &tmNow);
+strftime(timeString, timeString_size, "%Y-%m-%d %H:%M:%S", &tmNow);
+return timeString;
+}
+
+#ifdef __cplusplus
+}
+#endif

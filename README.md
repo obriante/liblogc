@@ -1,5 +1,6 @@
-# liblogc - C Library for video and file log
-###Copyright (C) 2012  Orazio Briante orazio.briante@hotmail.it
+﻿# liblogc - C Library for video and file log
+###Copyright (C) 2012 - 2013, Orazio Briante, <orazio.briante@hotmail.it>
+
 
 ## Prerequisites:
 
@@ -20,16 +21,10 @@
 	$ ./configure
 	$ make
 
- 
-## To enable Debug option on Compiling process:
- 	
-	$ ./configure --enable-debug
- 	
+## library check:
+
+ run "make check" from the test source tree. 	
 
 ## To clean directory
  
  run "make clean" from the test source tree.
-
-## Test Files:
-
-* logTest: Simple example that show how to use the library 

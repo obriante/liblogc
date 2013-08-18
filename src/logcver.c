@@ -1,6 +1,7 @@
 /*
  * liblogc - C Library for video and file log
- * Copyright (C) 2012 Orazio Briante orazio.briante@hotmail.it
+ *
+ * Copyright (C) 2012 - 2013, Orazio Briante, <orazio.briante@hotmail.it>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,9 +20,23 @@
 
 #include <logc/logcver.h>
 
-const char* logc_version(void)
+#ifdef __cplusplus
+extern "C"
+  {
+#endif
+
+const char*
+logc_version(void)
 {
-    return VERSION;
+  return VERSION;
 }
 
+const char*
+logc_copyright(void)
+{
+  return LOGC_COPYRIGHT;
+}
 
+#ifdef __cplusplus
+}
+#endif

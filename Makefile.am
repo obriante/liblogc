@@ -5,7 +5,8 @@ SUBDIRS = src include tests
 
 EXTRA_DIST = \
 	autogen.sh \
-	$(DX_CONFIG)
+	$(DX_CONFIG) \
+	README.md
 
 if DX_COND_doc
 

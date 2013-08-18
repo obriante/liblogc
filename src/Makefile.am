@@ -1,8 +1,11 @@
 noinst_LIBRARIES = liblogc.a
 
 liblogc_a_SOURCES = \
-logc.c \
-logcver.c
+functions.c \
+queue.c \
+logger.c \
+logcver.c \
+logc.c
 
 liblogc_a_LIBADD =
 

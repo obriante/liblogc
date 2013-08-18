@@ -1,7 +1,7 @@
 dnl Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.57)
-AC_INIT([logc], [1.1.0], [a logging library for C])
+AC_INIT([liblogc], [1.1.0], [orazio.briante@hotmail.it], )
 AC_CONFIG_SRCDIR(configure.ac)
 
 AC_CANONICAL_SYSTEM
@@ -56,7 +56,8 @@ src/Makefile
 include/Makefile
 include/logc/Makefile
 tests/Makefile
-tests/logtest/Makefile
+tests/simplelog/Makefile
 tests/multilog/Makefile
+tests/logqueue/Makefile
 )
 AC_OUTPUT
