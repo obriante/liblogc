@@ -41,7 +41,7 @@ queue_item_add(queue_t *queue, void *data)
   if (!item)
     return -1;
 
-  item->id = get_queue_nelem(queue)+1;
+  item->id = get_queue_nelem(queue) + 1;
   item->data = data;
   item->queue = queue;
   item->next = queue->head;

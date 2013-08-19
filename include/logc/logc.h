@@ -64,7 +64,6 @@
 #include <logc/logger.h>
 #include <logc/queue.h>
 
-
 #define log(id, logType, message)     print_message(id, logType, message, __FILE__,  __FUNCTION__, __LINE__) /**< To print a generic log output */
 
 #define trace(id, message)            print_message(id, TRACE, message, __FILE__,  __FUNCTION__, __LINE__)   /**< To print a trace output */
@@ -73,7 +72,6 @@
 #define warning(id, message)          print_message(id, WARNING,  message, __FILE__,  __FUNCTION__, __LINE__) /**< To print a warning output */
 #define error(id, message)            print_message(id, ERROR,  message, __FILE__,  __FUNCTION__, __LINE__)   /**< To print a error output */
 #define fatal(id, message)            print_message(id, FATAL,  message, __FILE__,  __FUNCTION__, __LINE__)   /**< To print a fatal output */
-
 
 static queue_t *logger_queue;
 
@@ -93,6 +91,7 @@ extern logger_t *
 get_logger(int id);
 
 void
-print_message(int, const log_type_t, const char *, const char *, const char *, int);
+print_message(int, const log_type_t, const char *, const char *, const char *,
+    int);
 
 #endif /* LOGC_H_ */

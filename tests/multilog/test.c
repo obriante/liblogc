@@ -62,9 +62,6 @@ main(int argc, char *argv[])
   logger_t *logger2 = init_logger(ALL_LEVEL, stdout, ALL_LEVEL,
       "/tmp/liblogc.multitest-2.log");
 
-//  set_logger_name(logger1, "logger1");
-//  set_logger_name(logger2, "logger2");
-
   remove_logger_file(logger1);
   open_logger_filestream(logger1);
 
@@ -85,16 +82,6 @@ main(int argc, char *argv[])
   logger_print(logger2, INFO, copyright);
   free(copyright);
   copyright = NULL;
-
-//  char* logger_name = NULL;
-//  asprintf(&logger_name, "logger name:\t%s", get_logger_name(logger1));
-//  info(logger1, logger_name);
-//  free(logger_name);
-//  logger_name = NULL;
-//  asprintf(&logger_name, "logger name:\t%s", get_logger_name(logger2));
-//  info(logger2, logger_name);
-//  free(logger_name);
-//  logger_name = NULL;
 
   print_messages(logger1, ALL_LEVEL_STRING, ALL_LEVEL_STRING);
   print_messages(logger2, ALL_LEVEL_STRING, ALL_LEVEL_STRING);

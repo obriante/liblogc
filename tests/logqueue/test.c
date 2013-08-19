@@ -24,58 +24,49 @@ int
 main(int argc, char *argv[])
 {
 
+  int logger_ids[255];
+
   init_logc();
 
-  const char *data_content = "Simple data content";
-
-  queue_t *queue = init_queue();
-
-  int num_elem = get_queue_nelem(queue);
-
-  int id1 = queue_item_add(queue, (void *) data_content);
-
-  num_elem = get_queue_nelem(queue);
-
-  int id2 = queue_item_add(queue, (void *) data_content);
-
-  num_elem = get_queue_nelem(queue);
-
-  queue_item_t *begin = get_queue_begin(queue);
-  queue_item_t *item = get_queue_item_by_id(queue, id2);
-  queue_item_t *end = get_queue_end(queue);
-
-  int status = queue_delete_item(queue, id1);
-
-  num_elem = get_queue_nelem(queue);
-
-  uninit_queue(queue);
-
   char* version = NULL;
-  asprintf(&version, "liblogc v%s", logc_version());
+  asprintf(&version, "liblogc-v%s", logc_version());
 
+  char *copyright = NULL;
+  asprintf(&copyright, "Copyright (C) %s", logc_copyright());
 
-  logger_t *logger1=init_logger(ALL_LEVEL, stdout, OFF_LEVEL, NULL);
-  logger_print(logger1, INFO, version);
+  int i = 0;
+  for (i = 0; i < 255; i++)
+    {
+      logger_ids[i] = add_logger(ALL_LEVEL, stdout, OFF_LEVEL, NULL);
+    }
 
-  int id_logger1=add_logger(ALL_LEVEL, stdout, OFF_LEVEL, NULL); // BUG without file!!
-  int id_logger2=add_logger(ALL_LEVEL, stdout, OFF_LEVEL, NULL); // BUG without file!!
+  for (i = 0; i < 255; i++)
+    {
 
+      logger_t *logger = get_logger(logger_ids[i]);
 
-  info(id_logger1,  version);
-  info(id_logger2,  version);
+      char * output = NULL;
+      asprintf(&output, "logger ID: %i", i + 1);
+      logger_print(logger, INFO, output);
+      free(output);
+      output = NULL;
 
-  logger_t *logger2=get_logger(id_logger2);
+      info(logger_ids[i], version);
+      info(logger_ids[i], copyright);
+    }
 
-  logger_print(logger1, INFO, version);
-  logger_print(logger2, INFO, version);
+  for (i = 0; i < 255; i++)
+    {
+      delete_logger(logger_ids[i]);
+    }
+
+  unit_logc();
 
   free(version);
   version = NULL;
 
-  delete_logger(id_logger1);
-  delete_logger(id_logger2);
-
-  unit_logc();
+  free(copyright);
+  copyright = NULL;
 
   return EXIT_SUCCESS;
 }

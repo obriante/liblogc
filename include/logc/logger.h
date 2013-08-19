@@ -79,7 +79,6 @@
 #define DEFAULT_TIME_FORMAT	        "%Y-%m-%d %H:%M:%S" 	/**< Default Time Format */
 #define DEFAULT_LOG_TEMPLATE	        "%s %s [%s] %s:%i - %s"	/**< Default LOG Template */
 
-
 #define logger_print(logger, logType, message) print(logger, logType, message, __FILE__,  __FUNCTION__, __LINE__) /**< To print a generic log output */
 
 /** Is used into the log function to show the message relevance*/
@@ -113,13 +112,11 @@ typedef struct
   int colored;
 } logger_t;
 
-
 extern logger_t *
 init_logger(log_level_t, FILE *, log_level_t, const char *);
 
 extern const int
 uninit_logger(logger_t *);
-
 
 extern int
 set_logger_file(logger_t *, const char *);
@@ -142,7 +139,6 @@ set_logger_colored(logger_t*, int);
 extern void
 set_logger_filename(logger_t*, const char *);
 
-
 extern const char *
 get_logger_filename(logger_t*);
 
@@ -164,7 +160,6 @@ get_logger_filestream(logger_t*);
 extern const int
 get_logger_colored(logger_t*);
 
-
 extern int
 open_logger_filestream(logger_t *);
 
@@ -175,6 +170,7 @@ extern int
 remove_logger_file(logger_t *);
 
 extern void
-print(logger_t *, const log_type_t , const char *, const char *, const char *, int);
+print(logger_t *, const log_type_t, const char *, const char *, const char *,
+    int);
 
 #endif /* _LOGGER_H_ */
