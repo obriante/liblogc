@@ -1,3 +1,6 @@
+pkginclude_HEADERS = \
+	functions.h
+
 noinst_LIBRARIES = liblogc.a
 
 liblogc_a_SOURCES = \
