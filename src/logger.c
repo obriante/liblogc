@@ -148,6 +148,7 @@ extern "C"
       break;
     }
 
+    if(string_format && timeString && type && message)
     asprintf(&string, string_format, timeString, type, function, file,
         line, message);
 

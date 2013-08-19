@@ -58,9 +58,9 @@ int
 main(int argc, char *argv[])
 {
   logger_t *logger1 = init_logger(ALL_LEVEL, stdout, ALL_LEVEL,
-      "/tmp/liblogc.multitest-1.log");
+      "multilog-1.log");
   logger_t *logger2 = init_logger(ALL_LEVEL, stdout, ALL_LEVEL,
-      "/tmp/liblogc.multitest-2.log");
+      "multilog-2.log");
 
   remove_logger_file(logger1);
   open_logger_filestream(logger1);

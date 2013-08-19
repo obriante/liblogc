@@ -23,7 +23,7 @@
 #include <stdlib.h>
 #include <logc/logc.h>
 
-#define LOG_FILE_NAME	"/tmp/liblogc.test.log"
+#define LOG_FILE_NAME	"simplelog.log"
 
 #define	OFF_LEVEL_STRING "OFF_LEVEL"
 #define	ALL_LEVEL_STRING "ALL_LEVEL"
