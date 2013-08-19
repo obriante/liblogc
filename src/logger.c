@@ -30,9 +30,46 @@
 #include <stdlib.h>
 #include <stdarg.h>
 
+#ifdef _WIN32
+
+#include <stdarg.h>
+
 #ifdef __cplusplus
 extern "C"
   {
+#endif
+
+int asprintf(char **ret, const char *format, ...)
+{
+    va_list ap;
+
+    *ret = NULL;  /* Ensure value can be passed to free() */
+
+    va_start(ap, format);
+    int count = vsnprintf(NULL, 0, format, ap);
+    va_end(ap);
+
+    if (count >= 0)
+    {
+        char* buffer = malloc(count + 1);
+        if (buffer == NULL)
+            return -1;
+
+        va_start(ap, format);
+        count = vsnprintf(buffer, count + 1, format, ap);
+        va_end(ap);
+
+        if (count < 0)
+        {
+            free(buffer);
+            return count;
+        }
+        *ret = buffer;
+    }
+
+    return count;
+}
+
 #endif
 
 int

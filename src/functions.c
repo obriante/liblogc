@@ -47,8 +47,23 @@ alloc_string(const char* string)
 /*
  *  INTERNAL_FUNCTION
  */
-
 char*
+time2String()
+{
+time_t now;
+struct tm * tmNow;
+int timeString_size = 26 * sizeof(char) * 8;
+char* timeString = (char*) malloc(timeString_size);
+
+time (&now);
+tmNow = localtime (&now);
+
+strftime (timeString,80,"%Y-%m-%d %H:%M:%S",tmNow);
+return(timeString);
+}
+
+
+/*char*
 time2String()
 {
   time_t now;
@@ -59,7 +74,7 @@ time2String()
   localtime_r(&now, &tmNow);
   strftime(timeString, timeString_size, "%Y-%m-%d %H:%M:%S", &tmNow);
   return timeString;
-}
+}*/
 
 #ifdef __cplusplus
 }
