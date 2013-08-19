@@ -23,11 +23,48 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <stdarg.h>
 
 #ifdef __cplusplus
 extern "C"
   {
 #endif
+
+#ifdef _WIN32
+
+  int asprintf(char **ret, const char *format, ...)
+  {
+    va_list ap;
+
+    *ret = NULL;  /* Ensure value can be passed to free() */
+
+    va_start(ap, format);
+    int count = vsnprintf(NULL, 0, format, ap);
+    va_end(ap);
+
+    if (count >= 0)
+      {
+        char* buffer = malloc(count + 1);
+        if (buffer == NULL)
+          return -1;
+
+        va_start(ap, format);
+        count = vsnprintf(buffer, count + 1, format, ap);
+        va_end(ap);
+
+        if (count < 0)
+          {
+            free(buffer);
+            return count;
+          }
+        *ret = buffer;
+      }
+
+    return count;
+  }
+
+#endif
+
 
 /*
  * ALLOC_STRING
@@ -61,20 +98,6 @@ tmNow = localtime (&now);
 strftime (timeString,80,"%Y-%m-%d %H:%M:%S",tmNow);
 return(timeString);
 }
-
-
-/*char*
-time2String()
-{
-  time_t now;
-  struct tm tmNow;
-  int timeString_size = 26 * sizeof(char) * 8;
-  char* timeString = (char*) malloc(timeString_size);
-  now = time(NULL);
-  localtime_r(&now, &tmNow);
-  strftime(timeString, timeString_size, "%Y-%m-%d %H:%M:%S", &tmNow);
-  return timeString;
-}*/
 
 #ifdef __cplusplus
 }

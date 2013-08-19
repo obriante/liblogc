@@ -23,11 +23,7 @@
 
 #define LOGC_COPYRIGHT "2012 - 2013 Orazio Briante <orazio.briante@hotmail.it>."
 
-#define LOGC_VERSION "1.1.0-RC2"
-
-#define LOGC_VERSION_MAJOR 1
-#define LOGC_VERSION_MINOR 1
-#define LOGC_VERSION_PATCH 0
+#define LOGC_VERSION VERSION
 
 extern const char *
 logc_version(void);

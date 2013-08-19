@@ -27,4 +27,10 @@
 	- logger
 	- logger queue
 	- fix file_stream OFF
+	
+[2013-08-19 ]
+	* Version 1.1.0
+	- MinGW support - asprintf redefinition
+	- better tests
+	- fix functions
  
