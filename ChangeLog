@@ -1,8 +1,8 @@
 [2012-09-02]
-	* Released Version 1.0
+	* Version 1.0
 	
 [2013-07-21]
-	* Relesed Version 1.0.1
+	* Version 1.0.1
  		- Color output for linux consol
 
 [2013-08-16 ]
@@ -23,14 +23,14 @@
 		
 [2013-08-18 ]
 	* Version 1.1.0-RC3
-	- library check
-	- logger
-	- logger queue
-	- fix file_stream OFF
+		- library check
+		- logger
+		- logger queue
+		- fix file_stream OFF
 	
 [2013-08-19 ]
 	* Version 1.1.0
-	- MinGW support - asprintf redefinition
-	- better tests
-	- fix functions
+		- MinGW support (asprintf redefinition)
+		- better tests
+		- fix functions
  

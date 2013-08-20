@@ -98,7 +98,7 @@ extern "C"
   print(logger_t *logger, const log_type_t logType, const char *message,
       const char *file, const char *function, int line)
   {
-    if (!logger)
+    if (!logger || !message)
       return;
 
     char *timeString = time2String();
@@ -113,7 +113,6 @@ extern "C"
     {
     case TRACE:
       type = TRACE_TYPE_STRING;
-
       color = TRACE_TYPE_COLOR;
       break;
 
@@ -149,13 +148,23 @@ extern "C"
     }
 
     if(string_format && timeString && type && message)
-    asprintf(&string, string_format, timeString, type, function, file,
-        line, message);
+      asprintf(&string, string_format, timeString, type, function, file,
+          line, message);
+
+
+    fprintf(stderr,"%s",string);
+
+    asprintf(&output, "%s", string);
 
     if (!logger->colored)
-      asprintf(&output, "%s%s%s", color, string, RESET);
-    else
-      asprintf(&output, "%s", string);
+      {
+        if (color)
+          {
+            free(output);
+            output=NULL;
+            asprintf(&output, "%s%s%s", color, string, RESET);
+          }
+      }
 
     if(logger->video_stream)
       if (!check_print(logger->video_logger_level, logType))
@@ -430,6 +439,9 @@ extern "C"
     if (logger)
       {
 
+        set_logger_template(logger, DEFAULT_LOG_TEMPLATE);
+
+        set_logger_colored(logger, 1);
         set_video_logger_level(logger, video_level);
         set_logger_videostream(logger, video_stream);
 
@@ -443,8 +455,6 @@ extern "C"
             set_logger_filename(logger, log_filename);
           }
 
-        set_logger_template(logger, DEFAULT_LOG_TEMPLATE);
-        set_logger_colored(logger, 1);
       }
 
     return logger;
