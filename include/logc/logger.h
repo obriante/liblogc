@@ -76,7 +76,57 @@
 #define DEFAULT_VIDEO_LOG_LEVEL	        ALL_LEVEL	 			/**< Default Log Mode */
 #define DEFAULT_FILE_LOG_LEVEL	        ALL_LEVEL	 			/**< Default Log Mode */
 
-#define DEFAULT_TIME_FORMAT	        "%Y-%m-%d %H:%M:%S" 	/**< Default Time Format */
+#define DEFAULT_TIME_FORMAT	        "%Y-%m-%d %H:%M:%S"
+
+/** < Default Time Format
+Code    Meaning
+
+----    -------
+
+%a      abbreviated weekday name
+
+%A      full weekday name
+
+%b      abbreviated month name
+
+%B      full month name
+
+%c      the standard date and time string
+
+%d      day of the month, as a number (1-31)
+
+%H      hour, 24 hour format (0-23)
+
+%I      hour, 12 hour format (1-12)
+
+%j      day of the year, as a number (1-366)
+
+%m      month as a number (1-12). Note: some versions of Microsoft Visual C++ may use values that range from 0-11.
+
+%M      minute as a number (0-59)
+
+%p      locale's equivalent of AM or PM
+
+%S      second as a number (0-59)
+
+%U      week of the year, sunday as the first day
+
+%w      weekday as a decimal (0-6, sunday=0)
+
+%W      week of the year, monday as the first day
+
+%x      standard date string
+
+%X      standard time string
+
+%y      year in decimal, without the century (0-99)
+
+%Y      year in decimal, with the century
+
+%Z      time zone name
+
+%%      a percent sign*/
+
 #define DEFAULT_LOG_TEMPLATE	        "%s %s [%s] %s:%i - %s"	/**< Default LOG Template */
 
 #define logger_print(logger, logType, message) print(logger, logType, message, __FILE__,  __FUNCTION__, __LINE__) /**< To print a generic log output */
@@ -103,6 +153,7 @@ typedef struct
 
   char * log_filename;
   char * log_template;
+  char * time_format;
 
   FILE *file_stream;
   FILE *video_stream;
@@ -124,6 +175,9 @@ set_logger_file(logger_t *, const char *);
 extern int
 set_logger_template(logger_t*, const char *);
 
+extern int
+set_time_format(logger_t *, const char *);
+
 extern void
 set_video_logger_level(logger_t*, const log_level_t);
 
@@ -144,6 +198,9 @@ get_logger_filename(logger_t*);
 
 extern const char *
 get_logger_template(logger_t*);
+
+extern const char*
+get_time_format(logger_t *);
 
 extern const log_level_t
 get_video_logger_level(logger_t*);

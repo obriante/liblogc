@@ -58,6 +58,7 @@ main(int argc, char *argv[])
 {
 
   logger_t *logger = init_logger(ALL_LEVEL, stderr, OFF_LEVEL, LOG_FILE_NAME);
+  set_time_format(logger, "%H:%M:%S %d-%m-%Y");
   remove_logger_file(logger);
   open_logger_filestream(logger);
 

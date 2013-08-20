@@ -25,6 +25,6 @@ extern char *
 alloc_string(const char *);
 
 extern char *
-time2String();
+time2String(const char *);
 
 #endif /* FUNCTIONS_H_ */

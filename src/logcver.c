@@ -28,7 +28,7 @@ extern "C"
 const char*
 logc_version(void)
 {
-  return VERSION;
+  return LOGC_VERSION;
 }
 
 const char*
