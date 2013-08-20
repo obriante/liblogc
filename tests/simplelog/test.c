@@ -40,7 +40,7 @@ print_messages(logger_t* logger, const char *log_level_video,
 
   char* message = NULL;
   asprintf(&message, "Video Log Level: %s, File Log Level: %s", log_level_video,
-      log_level_file);
+      log_level_file, NULL, NULL);
 
   logger_print(logger, TRACE, message);
   logger_print(logger, DEBUG, message);
@@ -57,8 +57,9 @@ int
 main(int argc, char *argv[])
 {
 
-  logger_t *logger = init_logger(ALL_LEVEL, stderr, OFF_LEVEL, LOG_FILE_NAME);
-  set_time_format(logger, "%H:%M:%S %d-%m-%Y");
+  logger_t *logger = init_logger(ALL_LEVEL, stderr, OFF_LEVEL, LOG_FILE_NAME, NULL, NULL);
+  set_logger_time_format(logger, "%H:%M:%S %d-%m-%Y");
+  set_logger_template(logger, "@t @T [@f] @F:@l - @m");
   remove_logger_file(logger);
   open_logger_filestream(logger);
 

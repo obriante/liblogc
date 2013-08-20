@@ -58,9 +58,10 @@ int
 main(int argc, char *argv[])
 {
   logger_t *logger1 = init_logger(ALL_LEVEL, stdout, ALL_LEVEL,
-      "multilog-1.log");
+      "multilog-1.log", NULL, NULL);
+  set_logger_time_format(logger1, "%H:%M:%S %d-%m-%Y");
   logger_t *logger2 = init_logger(ALL_LEVEL, stdout, ALL_LEVEL,
-      "multilog-2.log");
+      "multilog-2.log", NULL, "@t @T [@f] @F:@l - @m");
 
   remove_logger_file(logger1);
   open_logger_filestream(logger1);

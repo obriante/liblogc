@@ -36,6 +36,76 @@ extern "C"
 {
 #endif
 
+  const char* format_log_template(const char *string_format, const char*timeString, const char*type, const char*function, const char*file, int line, const char*message)
+  {
+    char *output=NULL;
+    char *temp=NULL;
+    asprintf(&output, "%s",string_format);
+
+    int i=0;
+    while(output[i])
+      {
+        if(output[i]=='@')
+          {
+            output[i]='%';
+            i++;
+
+            if(output[i]== 'T')
+              {
+                output[i]='s';
+
+                temp=output;
+                output=NULL;
+                asprintf(&output, temp, timeString);
+              }
+            else if(output[i]== 't'){
+                output[i]='s';
+                temp=output;
+                output=NULL;
+                asprintf(&output, temp, type);
+            }
+            else if(output[i]== 'F'){
+                output[i]='s';
+                temp=output;
+                output=NULL;
+                asprintf(&output, temp, file);
+            }
+            else if(output[i]== 'f'){
+                output[i]='s';
+                temp=output;
+                output=NULL;
+                asprintf(&output, temp, function);
+            }
+            else if(output[i]== 'l'){
+                output[i]='i';
+                temp=output;
+                output=NULL;
+                asprintf(&output, temp, line);
+            }
+            else if(output[i]== 'm')
+              {
+                output[i]='s';
+                temp=output;
+                output=NULL;
+                asprintf(&output, temp, message);
+              }
+            else
+              {
+                output[i-1]='@';
+              }
+
+            if(temp)
+              {
+                free(temp);
+                temp=NULL;
+              }
+          }
+        i++;
+      }
+
+    return output;
+  }
+
   int
   check_print(log_level_t log_level, log_type_t logType)
   {
@@ -110,7 +180,6 @@ extern "C"
 
     char *string_format = logger->log_template;
 
-    char *string = NULL;
     char *output = NULL;
     char *type = NULL;
     char *color = NULL;
@@ -157,8 +226,7 @@ extern "C"
     if(!string_format && !timeString && !type && !message)
       return;
 
-    asprintf(&string, string_format, timeString, type, function, file,
-        line, message);
+    const char *string=format_log_template(string_format, timeString, type, function, file, line, message);
 
     asprintf(&output, "%s", string);
 
@@ -205,19 +273,19 @@ extern "C"
   }
 
   const char*
-  get_time_format(logger_t *logger)
+  get_logger_time_format(logger_t *logger)
   {
     return logger->time_format;
   }
 
   const log_level_t
-  get_video_logger_level(logger_t *logger)
+  get_logger_video_level(logger_t *logger)
   {
     return logger->video_logger_level;
   }
 
   const log_level_t
-  get_file_logger_level(logger_t *logger)
+  get_logger_file_level(logger_t *logger)
   {
     return logger->file_logger_level;
   }
@@ -303,7 +371,7 @@ extern "C"
     return EXIT_FAILURE;
   }
 
-  int set_time_format(logger_t *logger, const char *template) {
+  int set_logger_time_format(logger_t *logger, const char *template) {
     if (logger && template) {
         if (logger->time_format)
           {
@@ -460,7 +528,7 @@ extern "C"
 
   logger_t *
   init_logger(log_level_t video_level, FILE *video_stream, log_level_t file_level,
-      const char *log_filename)
+      const char *log_filename, const char*time_format, const char*template)
   {
 
     logger_t *logger = (logger_t *) calloc(1, sizeof(logger_t));
@@ -469,8 +537,17 @@ extern "C"
       {
 
         set_logger_colored(logger, 1);
-        set_logger_template(logger, DEFAULT_LOG_TEMPLATE);
-        set_time_format(logger, DEFAULT_TIME_FORMAT);
+
+        if(!template)
+          set_logger_template(logger, DEFAULT_LOG_TEMPLATE);
+        else
+          set_logger_template(logger, template);
+
+        if(!time_format)
+          set_logger_time_format(logger, DEFAULT_TIME_FORMAT);
+        else
+          set_logger_time_format(logger, time_format);
+
 
         set_video_logger_level(logger, video_level);
         set_logger_videostream(logger, video_stream);

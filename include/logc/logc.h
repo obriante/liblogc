@@ -82,7 +82,7 @@ extern void
 unit_logc();
 
 extern int
-add_logger();
+add_logger(log_level_t, FILE *, log_level_t, const char *, const char*, const char*);
 
 extern int
 delete_logger(int id);

@@ -49,10 +49,9 @@ unit_logc()
 
 int
 add_logger(log_level_t video_level, FILE *video_stream, log_level_t file_level,
-    const char *log_filename)
+    const char *log_filename, const char*time_format, const char*template)
 {
-  logger_t *logger = init_logger(video_level, video_stream, file_level,
-      log_filename);
+  logger_t *logger = init_logger(video_level, video_stream, file_level, log_filename, time_format, template);
 
   return queue_item_add(logger_queue, (void *) logger);
 }

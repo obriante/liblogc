@@ -1,7 +1,7 @@
 dnl Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.57)
-AC_INIT([liblogc], [1.1.1], [orazio.briante@hotmail.it], )
+AC_INIT([liblogc], [1.2.0], [orazio.briante@hotmail.it], )
 AC_CONFIG_SRCDIR(configure.ac)
 
 AC_CANONICAL_SYSTEM
@@ -12,8 +12,6 @@ LOGC_MICRO_VERSION=$(echo $PACKAGE_VERSION | cut -d. -f3)
 LOGC_EXTRA_VERSION=$(echo $PACKAGE_VERSION | cut -d. -f4)
 
 LOGC_VERSION=$LOGC_MAJOR_VERSION.$LOGC_MINOR_VERSION.$LOGC_MICRO_VERSION${SNAPSHOT:+.$SNAPSHOT}
-
-LT_LOGC_VERSION=1.1.0
 
 AC_SUBST(LOGC_MAJOR_VERSION)
 AC_SUBST(LOGC_MINOR_VERSION)

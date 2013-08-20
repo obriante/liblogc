@@ -127,7 +127,25 @@ Code    Meaning
 
 %%      a percent sign*/
 
-#define DEFAULT_LOG_TEMPLATE	        "%s %s [%s] %s:%i - %s"	/**< Default LOG Template */
+#define DEFAULT_LOG_TEMPLATE	        "@T @t [@f] @F:@l - @m"
+
+/**
+ *  Default LOG Template
+
+ Code    Meaning
+
+----    -------
+
+@t      type (TRACE, DEBUG, INFO, etc.)
+@T      Time (in time format)
+
+@f      The function
+@F      The file
+
+@l      The line number
+@m      The message
+
+*/
 
 #define logger_print(logger, logType, message) print(logger, logType, message, __FILE__,  __FUNCTION__, __LINE__) /**< To print a generic log output */
 
@@ -164,7 +182,7 @@ typedef struct
 } logger_t;
 
 extern logger_t *
-init_logger(log_level_t, FILE *, log_level_t, const char *);
+init_logger(log_level_t, FILE *, log_level_t, const char *, const char*, const char*);
 
 extern const int
 uninit_logger(logger_t *);
@@ -176,7 +194,7 @@ extern int
 set_logger_template(logger_t*, const char *);
 
 extern int
-set_time_format(logger_t *, const char *);
+set_logger_time_format(logger_t *, const char *);
 
 extern void
 set_video_logger_level(logger_t*, const log_level_t);
@@ -200,13 +218,13 @@ extern const char *
 get_logger_template(logger_t*);
 
 extern const char*
-get_time_format(logger_t *);
+get_logger_time_format(logger_t *);
 
 extern const log_level_t
-get_video_logger_level(logger_t*);
+get_logger_video_level(logger_t*);
 
 extern const log_level_t
-get_file_logger_level(logger_t*);
+get_logger_file_level(logger_t*);
 
 extern FILE *
 get_logger_videosteam(logger_t*);

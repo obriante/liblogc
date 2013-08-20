@@ -37,7 +37,7 @@ main(int argc, char *argv[])
   int i = 0;
   for (i = 0; i < 255; i++)
     {
-      logger_ids[i] = add_logger(ALL_LEVEL, stdout, OFF_LEVEL, NULL);
+      logger_ids[i] = add_logger(ALL_LEVEL, stdout, OFF_LEVEL, NULL, NULL, NULL);
     }
 
   for (i = 0; i < 255; i++)
