@@ -20,21 +20,24 @@
 #include <logc/logc.h>
 #include <stdlib.h>
 
+
+#define LOG_INDEX       255
+
 int
 main(int argc, char *argv[])
 {
 
-  int logger_ids[255];
+  int logger_ids[LOG_INDEX];
 
   init_logc();
 
   int i = 0;
-  for (i = 0; i < 255; i++)
+  for (i = 0; i < LOG_INDEX; i++)
     {
       logger_ids[i] = add_logger(ALL_LEVEL, stdout, OFF_LEVEL, NULL, NULL, NULL);
     }
 
-  for (i = 0; i < 255; i++)
+  for (i = 0; i < LOG_INDEX; i++)
     {
 
       logger_t *logger = get_logger(logger_ids[i]);
@@ -49,7 +52,7 @@ main(int argc, char *argv[])
       info(logger_ids[i], "Copyright (C) %s", logc_copyright());
     }
 
-  for (i = 0; i < 255; i++)
+  for (i = 0; i < LOG_INDEX; i++)
     {
       delete_logger(logger_ids[i]);
     }
