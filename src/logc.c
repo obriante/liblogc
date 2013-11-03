@@ -80,7 +80,7 @@ extern "C"
   print_message(int id, const log_type_t logType, const char *file, const char *function, int line, const char *template, ...)
   {
 
-    char* message[4096];
+    char message[4096];
 
     va_list argList;
 
