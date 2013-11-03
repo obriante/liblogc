@@ -36,7 +36,7 @@ extern "C"
 {
 #endif
 
-  const char* format_log_template(const char *string_format, const char*timeString, const char*type, const char*function, const char*file, int line, const char*message)
+char* format_log_template(const char *string_format, const char*timeString, const char*type, const char*function, const char*file, int line, const char*message)
   {
     char *output=NULL;
     char *temp=NULL;
@@ -226,7 +226,7 @@ extern "C"
     if(!string_format && !timeString && !type && !message)
       return;
 
-    const char *string=format_log_template(string_format, timeString, type, function, file, line, message);
+    char *string=format_log_template(string_format, timeString, type, function, file, line, message);
 
     asprintf(&output, "%s", string);
 

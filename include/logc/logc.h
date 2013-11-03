@@ -64,14 +64,14 @@
 #include <logc/logger.h>
 #include <logc/queue.h>
 
-#define log(id, logType, message)     print_message(id, logType, message, __FILE__,  __FUNCTION__, __LINE__) /**< To print a generic log output */
+#define log(id, logType, template, ...)     print_message(id, logType, __FILE__,  __FUNCTION__, __LINE__ , template, ## __VA_ARGS__) /**< To print a generic log output */
 
-#define trace(id, message)            print_message(id, TRACE, message, __FILE__,  __FUNCTION__, __LINE__)   /**< To print a trace output */
-#define debug(id, message)            print_message(id, DEBUG,  message, __FILE__,  __FUNCTION__, __LINE__)   /**< To print a debug output */
-#define info(id, message)             print_message(id, INFO,  message, __FILE__,  __FUNCTION__, __LINE__)    /**< To print a info output */
-#define warning(id, message)          print_message(id, WARNING,  message, __FILE__,  __FUNCTION__, __LINE__) /**< To print a warning output */
-#define error(id, message)            print_message(id, ERROR,  message, __FILE__,  __FUNCTION__, __LINE__)   /**< To print a error output */
-#define fatal(id, message)            print_message(id, FATAL,  message, __FILE__,  __FUNCTION__, __LINE__)   /**< To print a fatal output */
+#define trace(id, template, ...)            print_message(id, TRACE, __FILE__,  __FUNCTION__, __LINE__, template, ## __VA_ARGS__)   /**< To print a trace output */
+#define debug(id, template, ...)            print_message(id, DEBUG, __FILE__,  __FUNCTION__, __LINE__, template, ## __VA_ARGS__)   /**< To print a debug output */
+#define info(id, template, ...)             print_message(id, INFO,  __FILE__,  __FUNCTION__, __LINE__, template, ## __VA_ARGS__)    /**< To print a info output */
+#define warning(id, template, ...)          print_message(id, WARNING, __FILE__,  __FUNCTION__, __LINE__, template, ## __VA_ARGS__) /**< To print a warning output */
+#define error(id, template, ...)            print_message(id, ERROR,  __FILE__,  __FUNCTION__, __LINE__, template, ## __VA_ARGS__)   /**< To print a error output */
+#define fatal(id, template, ...)            print_message(id, FATAL,  __FILE__,  __FUNCTION__, __LINE__, template, ## __VA_ARGS__)   /**< To print a fatal output */
 
 static queue_t *logger_queue;
 
@@ -91,7 +91,7 @@ extern logger_t *
 get_logger(int id);
 
 void
-print_message(int, const log_type_t, const char *, const char *, const char *,
-    int);
+print_message(int, const log_type_t, const char *, const char *,
+    int, const char *, ...);
 
 #endif /* LOGC_H_ */

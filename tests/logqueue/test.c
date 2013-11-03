@@ -28,12 +28,6 @@ main(int argc, char *argv[])
 
   init_logc();
 
-  char* version = NULL;
-  asprintf(&version, "liblogc-v%s", logc_version());
-
-  char *copyright = NULL;
-  asprintf(&copyright, "Copyright (C) %s", logc_copyright());
-
   int i = 0;
   for (i = 0; i < 255; i++)
     {
@@ -51,8 +45,8 @@ main(int argc, char *argv[])
       free(output);
       output = NULL;
 
-      info(logger_ids[i], version);
-      info(logger_ids[i], copyright);
+      info(logger_ids[i], "liblogc-v%s", logc_version());
+      info(logger_ids[i], "Copyright (C) %s", logc_copyright());
     }
 
   for (i = 0; i < 255; i++)
@@ -61,12 +55,6 @@ main(int argc, char *argv[])
     }
 
   unit_logc();
-
-  free(version);
-  version = NULL;
-
-  free(copyright);
-  copyright = NULL;
 
   return EXIT_SUCCESS;
 }

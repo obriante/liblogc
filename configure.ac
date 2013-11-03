@@ -1,7 +1,7 @@
 dnl Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.57)
-AC_INIT([liblogc], [1.2.0], [orazio.briante@hotmail.it], )
+AC_INIT([liblogc], [1.2.1], [orazio.briante@hotmail.it], )
 AC_CONFIG_SRCDIR(configure.ac)
 
 AC_CANONICAL_SYSTEM
