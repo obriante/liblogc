@@ -1,3 +1,4 @@
+
 /*
  * liblogc - C Library for video and file log
  *
@@ -16,15 +17,11 @@
  *
  * You should have received a copy of the GNU General Public License along
  * with this program. If not, see <http://www.gnu.org/licenses/>.
- */
-
+ */  
+  
 #ifndef FUNCTIONS_H_
 #define FUNCTIONS_H_
-
-extern char *
-alloc_string(const char *);
-
-extern char *
-time2String(const char *);
-
-#endif /* FUNCTIONS_H_ */
+extern char *alloc_string(const char *);
+ extern char *time2String(const char *);
+ 
+#endif  /* FUNCTIONS_H_ */

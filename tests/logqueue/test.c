@@ -1,3 +1,4 @@
+
 /*
  * liblogc - C Library for video and file log
  *
@@ -32,30 +33,27 @@ main(int argc, char *argv[])
   init_logc();
 
   int i = 0;
-  for (i = 0; i < LOG_INDEX; i++)
-    {
-      logger_ids[i] = add_logger(ALL_LEVEL, stdout, OFF_LEVEL, NULL, NULL, NULL);
-    }
+  for (i = 0; i < LOG_INDEX; i++) {
+    logger_ids[i] = add_logger(ALL_LEVEL, stdout, OFF_LEVEL, NULL, NULL, NULL);
+  }
 
-  for (i = 0; i < LOG_INDEX; i++)
-    {
+  for (i = 0; i < LOG_INDEX; i++) {
 
-      logger_t *logger = get_logger(logger_ids[i]);
+    logger_t *logger = get_logger(logger_ids[i]);
 
-      char * output = NULL;
-      asprintf(&output, "logger ID: %i", i + 1);
-      logger_print(logger, INFO, output);
-      free(output);
-      output = NULL;
+    char *output = NULL;
+    asprintf(&output, "logger ID: %i", i + 1);
+    logger_print(logger, INFO, output);
+    free(output);
+    output = NULL;
 
-      info(logger_ids[i], "liblogc-v%s", logc_version());
-      info(logger_ids[i], "Copyright (C) %s", logc_copyright());
-    }
+    info(logger_ids[i], "liblogc-v%s", logc_version());
+    info(logger_ids[i], "Copyright (C) %s", logc_copyright());
+  }
 
-  for (i = 0; i < LOG_INDEX; i++)
-    {
-      delete_logger(logger_ids[i]);
-    }
+  for (i = 0; i < LOG_INDEX; i++) {
+    delete_logger(logger_ids[i]);
+  }
 
   unit_logc();
 

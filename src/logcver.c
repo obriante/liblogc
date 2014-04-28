@@ -1,3 +1,4 @@
+
 /*
  * liblogc - C Library for video and file log
  *
@@ -16,27 +17,23 @@
  *
  * You should have received a copy of the GNU General Public License along
  * with this program. If not, see <http://www.gnu.org/licenses/>.
- */
-
+ */  
+  
 #include <logc/logcver.h>
-
+  
 #ifdef __cplusplus
-extern "C"
-  {
-#endif
-
-const char*
-logc_version(void)
-{
-  return LOGC_VERSION;
-}
-
-const char*
-logc_copyright(void)
-{
-  return LOGC_COPYRIGHT;
-}
-
+extern "C"  {
+  
+#endif  /*  */
+  const char *logc_version(void)  {
+    return LOGC_VERSION;
+  }
+   const char *logc_copyright(void)  {
+    return LOGC_COPYRIGHT;
+  }
+   
 #ifdef __cplusplus
 }
-#endif
+
+
+#endif  /*  */

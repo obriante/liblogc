@@ -1,3 +1,4 @@
+
 /*
  * liblogc - C Library for video and file log
  *
@@ -16,15 +17,15 @@
  *
  * You should have received a copy of the GNU General Public License along
  * with this program. If not, see <http://www.gnu.org/licenses/>.
- */
-
+ */  
+  
 #ifndef DEPRECATED_H_
 #define DEPRECATED_H_
-
+  
 #ifdef __GNUC__
 #ifndef attribute_deprecated
 #define attribute_deprecated __attribute__((deprecated))
-#endif
-#endif
-
-#endif /* DEPRECATED_H_ */
+#endif  /*  */
+#endif  /*  */
+  
+#endif  /* DEPRECATED_H_ */

@@ -1,3 +1,4 @@
+
 /*
  * liblogc - C Library for video and file log
  *
@@ -16,19 +17,15 @@
  *
  * You should have received a copy of the GNU General Public License along
  * with this program. If not, see <http://www.gnu.org/licenses/>.
- */
-
+ */  
+  
 #ifndef LOGCVER_H_
 #define LOGCVER_H_
-
+  
 #define LOGC_COPYRIGHT "2012 - 2013 Orazio Briante <orazio.briante@hotmail.it>."
-
+  
 #define LOGC_VERSION VERSION
-
-extern const char *
-logc_version(void);
-
-extern const char *
-logc_copyright(void);
-
-#endif /* LOGCVER_H_ */
+extern const char *logc_version(void);
+ extern const char *logc_copyright(void);
+ 
+#endif  /* LOGCVER_H_ */
